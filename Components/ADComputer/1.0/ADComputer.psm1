@@ -996,7 +996,7 @@ Function Compare-ComputerGrpsBtn {
                                         else {
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                                New-UDTable -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
+                                                New-UDTable -Title "$($Computer) is not a member of the following groups" -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
                                             }
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children { 
                                                 New-UDButton -Text "Add to selected" -OnClick {
@@ -1012,7 +1012,7 @@ Function Compare-ComputerGrpsBtn {
                                                                         }
                                                                     } ) )
                                     
-                                                            Show-UDToast -Message "$($Computer) are now member of $($SelectedGrp -join ",")!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                            Show-UDToast -Message "$($Computer) is now member of $($SelectedGrp -join ",")!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                             Sync-UDElement -Id 'CompUsrGrpsTable'
                                                         }
                                                         catch {

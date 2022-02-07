@@ -274,13 +274,14 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'info' -Text "$($GroupName) don't have any members!"
                                     }
+                                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
                                 }
                                 else {
                                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         $SearchMemberOption = New-UDTableTextOption -Search "Search after member"
                                         New-UDTable -Id 'GroupSearchTable' -Data $SearchGroupUserData -Columns $SearchGroupUserColumns -DefaultSortDirection "Ascending" -TextOption $SearchMemberOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50) -ShowSelection
                                     }
-                                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
+                                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                         New-UDTooltip -TooltipContent {
                                             New-UDTypography -Text "Delete selected from the group"
                                         } -content { 
@@ -309,10 +310,9 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             }
                                         }
                                     }
-                                    New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
                                 }
-                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 1 -Children { }
-                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 7 -Children { 
+                                New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 1 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { 
                                     New-UDTextbox -Id "txtSearchGroupADD" -Label "Enter Username, Computername or Group name" -FullWidth
                                     New-UDHTML -Markup "<i>(If your going to add a computer you need to add $ sign at the end of the computer name)</i>"
                                 }
