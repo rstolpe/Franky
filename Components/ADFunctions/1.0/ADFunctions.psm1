@@ -355,13 +355,13 @@ function Set-EnableDisableADAccountBtn {
         } -content { 
             New-UDButton -Icon (New-UDIcon -Icon lock) -size small -Onclick { 
                 Show-UDModal -Header { "Disable account for $($ObjectName)" } -Content {
-                    New-UDGrid -Spacing '1' -Container -Content {
-                        New-UDGrid -Item -Size 12 -Content {
-                            New-UDGrid -Item -Size 1 -Content { }
-                            New-UDGrid -Item -Size 10 -Content { 
+                    New-UDGrid -Spacing '1' -Container -Children {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                            New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
+                            New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
                                 New-UDTextbox -Id 'txtReason' -Label 'Reason for disabling?' -FullWidth
                             }
-                            New-UDGrid -Item -Size 1 -Content { }
+                            New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
                         }
                     }
                 } -Footer {
@@ -402,13 +402,13 @@ function Set-EnableDisableADAccountBtn {
         } -content { 
             New-UDButton -Icon (New-UDIcon -Icon lock_open) -size small -Onclick { 
                 Show-UDModal -Header { "Disable account for $($ObjectName)" } -Content {
-                    New-UDGrid -Spacing '1' -Container -Content {
-                        New-UDGrid -Item -Size 12 -Content {
-                            New-UDGrid -Item -Size 1 -Content { }
-                            New-UDGrid -Item -Size 10 -Content { 
+                    New-UDGrid -Spacing '1' -Container -Children {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                            New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
+                            New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children { 
                                 New-UDTypography -Text "Are you sure that you want to enable $($ObjectName)?"
                             }
-                            New-UDGrid -Item -Size 1 -Content { }
+                            New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
                         }
                     }
                 } -Footer {
@@ -457,8 +457,8 @@ function Edit-ManagedByBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon pencil_square) -size small -Onclick { 
             Show-UDModal -Header { "Change manage by for $($ObjectName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTextbox -Id "txtChangeManagedBy" -Label "Enter username for manage by" -Value $CurrentValue -FullWidth
                     }
                 }
@@ -541,12 +541,12 @@ function Remove-ADObjectBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon trash_alt) -size medium -Onclick { 
             Show-UDModal -Header { "Delete $($ObjectName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 1 -Content { }
-                    New-UDGrid -Item -Size 10 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
                         New-UDTypography -Text "Are you sure that you want to delete $($ObjectName)?"
                     }
-                    New-UDGrid -Item -Size 1 -Content { }
+                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
                 }
             } -Footer {
                 New-UDButton -Text "Yes" -Size medium -OnClick {
@@ -631,8 +631,8 @@ function Edit-PrimaryGroup {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon pencil_square) -size small -Onclick { 
             Show-UDModal -Header { "Change primary group for $($ObjectName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTextbox -Id "txtPrimaryGroup" -Label "Enter new primary group" -Value $CurrentValue -FullWidth
                     }
                 }

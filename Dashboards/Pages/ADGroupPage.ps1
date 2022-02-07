@@ -16,14 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
-New-UDGrid -Spacing '1' -Container -Content {
-    New-UDGrid -Item -Size 1 -Content { }
-    New-UDGrid -Item -Size 10 -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 3 -Content {
-                New-UDTextbox -Id "txtGroupNameStart" -Icon (New-UDIcon -Icon 'users') -Label "Group name (Wildcard * accepted)" -FullWidth
+New-UDGrid -Spacing '1' -Container -Children {
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
+    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 12 -SmallSize 12 -Children {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 6 -Children {
+                New-UDTextbox -Id "txtGroupNameStart" -Icon (New-UDIcon -Icon 'users') -Label "Group name (wildcard * accepted)" -FullWidth
             }
-            New-UDGrid -Item -Size 3 -Content {
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 4 -Children { 
                 New-UDButton -Icon (New-UDIcon -Icon 'search') -Size large -OnClick {
                     $GroupName = (Get-UDElement -Id "txtGroupNameStart").value
 
@@ -40,14 +40,14 @@ New-UDGrid -Spacing '1' -Container -Content {
                 New-ADGrp -RefreshOnClose "GroupSearchStart" -BoxToSync "txtGroupNameStart" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
             }
         }
-        New-UDGrid -Item -Size 6 -Content { }
+        New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 2 -Children { }
     }
-    New-UDGrid -Item -Size 1 -Content { }
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
 }
 
-New-UDGrid -Spacing '1' -Container -Content {
-    New-UDGrid -Item -Size 1 -Content { }
-    New-UDGrid -Item -Size 10 -Content {
+New-UDGrid -Spacing '1' -Container -Children {
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
+    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 12 -SmallSize 12 -Children {
         New-UDCard -Content {
             New-UDDynamic -Id 'GroupSearchStart' -content {
                 $GroupName = (Get-UDElement -Id "txtGroupNameStart").value
@@ -57,7 +57,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                 }
 
                 if ([string]::IsNullOrEmpty($GroupName)) {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDAlert -Severity 'error' -Text "You need to enter a group name!"
                     }
                 }
@@ -83,139 +83,139 @@ New-UDGrid -Spacing '1' -Container -Content {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "GroupSearch" -EventID 10 -EntryType Information -Message "$($User) did search for $($GroupName)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
-                        New-UDGrid -Spacing '1' -Container -Content {
+                        New-UDGrid -Spacing '1' -Container -Children {
                             New-UDDynamic -Id 'GroupSearch' -content {
                                 $SearchADGroup = Get-ADGroup -Filter "samaccountname -eq '$($GroupName)'"  -Properties Description, info, mail, ManagedBy, DistinguishedName, GroupCategory, GroupScope, whenChanged, Created, SamAccountName, SID, Name, CN, DisplayName
 
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     Show-ADGroupMemberOf -EventLogName $EventLogName -RefreshOnClose "GroupSearch" -ActiveEventLog $ActiveEventLog -ObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Remove-ADObjectBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -ObjectType "Group" -ObjectName $GroupName -RefreshOnClose "GroupSearchStart" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     New-RefreshUDElementBtn -RefreshUDElement 'GroupSearchStart'
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHTML -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHTML -Markup "<br>"
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     New-UDHtml -Markup "<b>Information about $($GroupName)</b>"
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Display name"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.DisplayName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtGroupNameStart" -EventLogName $EventLogName -WhatToChange "DisplayName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearchStart" -CurrentValue $SearchADGroup.DisplayName -ObjectToRename 'Group' -ObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "CN Name"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.CN)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtGroupNameStart" -EventLogName $EventLogName -WhatToChange "CN" -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearchStart" -CurrentValue $SearchADGroup.CN -ObjectToRename 'Group' -ObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SamAccountName"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.SamAccountName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtGroupNameStart" -EventLogName $EventLogName -WhatToChange "SamAccountName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearchStart" -CurrentValue $SearchADGroup.SamAccountName -ObjectToRename 'Group' -ObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SID"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.SID)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Description"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.Description)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Edit-DescriptionBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearch" -CurrentValue $SearchADGroup.Description -ChangeDescriptionObject 'Group' -ChangeObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Info"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.info)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Edit-GroupInfoBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -CurrentValue $SearchADGroup.info -GroupName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "OU Placement"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.DistinguishedName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Move-ADObjectBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearch" -CurrentValue $SearchADGroup.DistinguishedName -ObjectToMove 'Group' -GroupName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Category"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.GroupCategory)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Set-GroupCategoryBtn -CurrentGroupCategory $SearchADGroup.GroupCategory -GroupName $GroupName -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Scope"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.GroupScope)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Set-GroupScopeBtn -CurrentGroupScope $SearchADGroup.GroupScope -GroupName $GroupName -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Created"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.Created)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Last changed"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.whenChanged)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Mail"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADGroup.mail)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Edit-MailBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "GroupSearch" -CurrentValue $SearchADGroup.mail -ChangeMailObject 'Group' -ChangeObjectName $GroupName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Manage by"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     $GroupManagedBy = $(try { $SearchADGroup.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     if ($null -ne $GroupManagedBy) {
                                         New-UDTypography -Text "$($GroupManagedBy)"
                                     }
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     $GroupManagedBy = $(try { $SearchADGroup.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     Edit-ManagedByBtn -CurrentValue $GroupManagedBy -ObjectType "Group" -ObjectName $GroupName -RefreshOnClose "GroupSearch" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHTML -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHTML -Markup "<br>"
                                 }
                             } -LoadingComponent {
                                 New-UDProgress -Circular
@@ -271,16 +271,16 @@ New-UDGrid -Spacing '1' -Container -Content {
                                     New-UDTableColumn -Property Info -Title "Info" -IncludeInExport -IncludeInSearch
                                 )
                                 if ([string]::IsNullOrEmpty($SearchGroupUserData)) {
-                                    New-UDGrid -Item -Size 12 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'info' -Text "$($GroupName) don't have any members!"
                                     }
                                 }
                                 else {
-                                    New-UDGrid -Item -Size 12 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         $SearchMemberOption = New-UDTableTextOption -Search "Search after member"
                                         New-UDTable -Id 'GroupSearchTable' -Data $SearchGroupUserData -Columns $SearchGroupUserColumns -DefaultSortDirection "Ascending" -TextOption $SearchMemberOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50) -ShowSelection
                                     }
-                                    New-UDGrid -Item -Size 2 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                                         New-UDTooltip -TooltipContent {
                                             New-UDTypography -Text "Delete selected from the group"
                                         } -content { 
@@ -309,13 +309,14 @@ New-UDGrid -Spacing '1' -Container -Content {
                                             }
                                         }
                                     }
-                                    New-UDGrid -Item -Size 2 -Content { }
+                                    New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
                                 }
-                                New-UDGrid -Item -Size 5 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 1 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 7 -Children { 
                                     New-UDTextbox -Id "txtSearchGroupADD" -Label "Enter Username, Computername or Group name" -FullWidth
                                     New-UDHTML -Markup "<i>(If your going to add a computer you need to add $ sign at the end of the computer name)</i>"
                                 }
-                                New-UDGrid -Item -Size 3 -Content { 
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Children { 
                                     New-UDTooltip -TooltipContent {
                                         New-UDTypography -Text "Add enterd Username, Computername or Groupname to $($GroupName)"
                                     } -content { 
@@ -351,7 +352,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                         }
                     }
                     else { 
-                        New-UDGrid -Item -Size 12 -Content {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                             New-UDAlert -Severity 'error' -Text "$($GroupName) are not a member in the AD!"
                         }
                     }
@@ -361,5 +362,5 @@ New-UDGrid -Spacing '1' -Container -Content {
             }
         }       
     }
-    New-UDGrid -Item -Size 1 -Content { }
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
 }

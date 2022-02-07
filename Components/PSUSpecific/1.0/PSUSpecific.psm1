@@ -68,7 +68,7 @@ function New-MultiSearch {
     }
     Show-UDModal -Header { $ToolTip } -Content {
         New-UDDynamic -Id 'MultiSearchList' -content {
-            New-UDGrid -Spacing '1' -Container -Content {
+            New-UDGrid -Spacing '1' -Container -Children {
                 if ($MultiSearchObj -eq "User") {
                     $MoreData = Get-ADUser -Filter "$($UsrTypSearch) -like '$($SearchFor)*'"  -Properties samAccountName, Surname, Givenname, EmailAddress, Description | Foreach-Object { 
                         if ($null -ne ($moreuser = $_)) {
@@ -160,12 +160,12 @@ function New-MultiSearch {
                 }
                 $SearchOption = New-UDTableTextOption -Search $SearchText
                 if ([string]::IsNullOrEmpty($MoreData)) {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDAlert -Severity 'error' -Text "The search did end up with no results"
                     }
                 }
                 else {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTable -Id 'MoreADTable' -Data $MoreData -Columns $MoreColumns -TextOption $SearchOption -DefaultSortDirection "Ascending" -ShowSearch -ShowPagination -Dense -Sort -PageSize 200
                     }
                 }

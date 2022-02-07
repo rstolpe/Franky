@@ -33,7 +33,7 @@ Function Show-MonitorInfoBtn {
         New-UDButton -Icon (New-UDIcon -Icon desktop) -size medium -Onclick {
             Show-UDModal -Header { "Monitor information from $Computer" } -Content {
                 New-UDDynamic -Id 'DisplayInfo' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowMonitorInfo" -EventID 10 -EntryType Information -Message "$($User) did look at monitor info for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -67,12 +67,12 @@ Function Show-MonitorInfoBtn {
                         }
 
                         if ([string]::IsNullOrEmpty($DisplayData)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Columns $Columns -Data $DisplayData -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
@@ -111,7 +111,7 @@ function Show-InstalledDriversBtn {
         New-UDButton -Icon (New-UDIcon -Icon screwdriver) -size medium -Onclick {
             Show-UDModal -Header { "All installed drivers on $($Computer)" } -Content {
                 New-UDDynamic -Id 'DriversData' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowInstalledDrivers" -EventID 10 -EntryType Information -Message "$($User) did look at installed drivers for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -139,12 +139,12 @@ function Show-InstalledDriversBtn {
                             New-UDTableColumn -Property dDriverDate -Title "Date" -IncludeInExport -IncludeInSearch
                         )
                         if ([string]::IsNullOrEmpty($DriversData)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Id 'DriversSearchTable' -Data $DriversData -Columns $DriversColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
                             }
@@ -189,7 +189,7 @@ Function Get-SysInfo {
         }
     }
     catch {
-        New-UDGrid -Item -Size 12 -Content {
+        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
             New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
         }
     }
@@ -212,7 +212,7 @@ function Show-NetAdpBtn {
         New-UDButton -Icon (New-UDIcon -Icon ethernet) -size medium -Onclick {
             Show-UDModal -Header { "All network adpaters on $Computer" } -Content {
                 New-UDDynamic -Id 'AdapterData' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowNetworkAdapters" -EventID 10 -EntryType Information -Message "$($User) did look at network adapters for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -299,12 +299,12 @@ function Show-NetAdpBtn {
                             }
                         )
                         if ([string]::IsNullOrEmpty($AllAdapters)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Id 'AdapterSearchTable' -Data $AllAdapters -Columns $AdaptersColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
                             }
@@ -341,7 +341,7 @@ function Show-ProcessTableBtn {
         New-UDButton -Icon (New-UDIcon -Icon tasks) -size medium -Onclick {
             Show-UDModal -Header { "Show process on $($Computer)" } -Content {
                 New-UDDynamic -Id 'ProcessStart' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowProcess" -EventID 10 -EntryType Information -Message "$($User) did look at processes for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -381,12 +381,12 @@ function Show-ProcessTableBtn {
                         )
                         $Processes = Invoke-Command -ComputerName $Computer -Scriptblock { Get-Process -IncludeUserName | Select-Object @("Id", "ProcessName", "CPU", "WorkingSet", "UserName") }
                         if ([string]::IsNullOrEmpty($Processes)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Columns $Columns -Data $Processes -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
@@ -425,7 +425,7 @@ function Show-InstalledSoftwareBtn {
         New-UDButton -Icon (New-UDIcon -Icon list_ul) -size medium -Onclick {
             Show-UDModal -Header { "All installed softwares on $($Computer)" } -Content {
                 New-UDDynamic -Id 'InstallSWData' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowInstalledSoftware" -EventID 10 -EntryType Information -Message "$($User) did look at installed software for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -437,12 +437,12 @@ function Show-InstalledSoftwareBtn {
                             New-UDTableColumn -Property InstallDate -Title "Installation Date" -IncludeInExport -IncludeInSearch
                         )
                         if ([string]::IsNullOrEmpty($InstallData)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Id 'InstallSWSearchTable' -Data $InstallData -Columns $InstallColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
                             }
@@ -481,7 +481,7 @@ function Show-AutostartTableBtn {
         New-UDButton -Icon (New-UDIcon -Icon play) -size medium -Onclick {
             Show-UDModal -Header { "Autostart on $($Computer)" } -Content {
                 New-UDDynamic -Id 'Autostart' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowAutostart" -EventID 10 -EntryType Information -Message "$($User) did look at autostart for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -496,12 +496,12 @@ function Show-AutostartTableBtn {
                         )
                         $Autostarts = Get-CimInstance -Computer $Computer Win32_StartupCommand | Select-Object @("Name", "User")
                         if ([string]::IsNullOrEmpty($Autostarts)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Columns $Columns -Data $Autostarts -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
@@ -540,7 +540,7 @@ function Show-ServicesTableBtn {
         New-UDButton -Icon (New-UDIcon -Icon clipboard_list) -size medium -Onclick {
             Show-UDModal -Header { "Services on $($Computer)" } -Content {
                 New-UDDynamic -Id 'serviceTable' -Content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowServices" -EventID 10 -EntryType Information -Message "$($User) did look at Services for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -695,12 +695,12 @@ function Show-ServicesTableBtn {
 
                         $Services = Invoke-Command -ComputerName $Computer -Scriptblock { Get-Service }
                         if ([string]::IsNullOrEmpty($Services)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Columns $Columns -Data $Services -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
@@ -737,7 +737,7 @@ function Remove-UserProfilesBtn {
     
     Show-UDModal -Header { "Delete user profile from $($Computer)" } -Content {
         New-UDDynamic -Id 'ShowUsrProfdata' -content {
-            New-UDGrid -Spacing '1' -Container -Content {
+            New-UDGrid -Spacing '1' -Container -Children {
                 if ($ActiveEventLog -eq "True") {
                     Write-EventLog -LogName $EventLogName -Source "ShowComputerUserProfiles" -EventID 10 -EntryType Information -Message "$($User) has been looking at $($Computer) user profiles`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                 }
@@ -843,16 +843,16 @@ function Remove-UserProfilesBtn {
                     }
                 )
                 if ([string]::IsNullOrEmpty($SearchComputerGroupData)) {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDAlert -Severity 'error' -Text "$($Computer) has no user profiles or could not establish a connection to $($Computer)"
                     }
                 }
                 else {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         $SearchOption = New-UDTableTextOption -Search "Search"
                         New-UDTable -Id 'ComputerSearchTable' -Data $SearchComputerGroupData -Columns $SearchComputerGroupColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -ShowSelection
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDButton -Text "Delete selected" -OnClick {
                             $ComputerSearchTable = Get-UDElement -Id "ComputerSearchTable"
                             $ComputerSearchLog = @($ComputerSearchTable.selectedRows.User)
@@ -933,14 +933,14 @@ Function Compare-ComputerGrpsBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon not_equal) -size medium -Onclick {
             Show-UDModal -Header { "Compare $($Computer)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 5 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtCompComputer' -Label "Compare against?"
                     }
-                    New-UDGrid -Item -Size 7 -Content { }
+                    New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
                 }
                 New-UDDynamic -Id 'CompUsrGrpsTable' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         $CompComputer = (Get-UDElement -Id "txtCompComputer").value
                         if ($NULL -ne $CompComputer) {
                             $CompComputer = $CompComputer.trim()
@@ -949,8 +949,8 @@ Function Compare-ComputerGrpsBtn {
                         if ($null -ne $CompComputer) {
                             if (Get-ADComputer -Filter "samaccountname -eq '$($CompComputer)$'") {
                                 if ($Computer -eq $CompComputer) {
-                                    New-UDGrid -Item -Size 12 -Content {
-                                        New-UDHtml -Markup "</br>"
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                        New-UDHtml -Markup "<br>"
                                         New-UDAlert -Severity 'error' -Text "You can't compare $($Computer) to it self! "
                                     }
                                 }
@@ -988,17 +988,17 @@ Function Compare-ComputerGrpsBtn {
                                         $CompData = Compare-Object -ReferenceObject $obj -DifferenceObject $obj2 -Property SamAccountName | Where-Object { $_.SideIndicator -eq "=>" } | Foreach-Object { Get-ADGroup -Identity $_.SamAccountName -Property Displayname, Description | Select-Object SamAccountName, Description }
                 
                                         if ([string]::IsNullOrEmpty($CompData)) {
-                                            New-UDGrid -Item -Size 12 -Content {
-                                                New-UDHtml -Markup "</br>"
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDHtml -Markup "<br>"
                                                 New-UDAlert -Severity 'success' -Text "$($Computer) are member in all groups that $($CompComputer) are member in!"
                                             }
                                         }
                                         else {
-                                            New-UDGrid -Item -Size 12 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                                 New-UDTable -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
                                             }
-                                            New-UDGrid -Item -Size 12 -Content { 
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children { 
                                                 New-UDButton -Text "Add to selected" -OnClick {
                                                     $CompTable = Get-UDElement -Id "CompTable"
                                                     $SelectedGrp = @($CompTable.selectedRows.SamAccountName)
@@ -1037,15 +1037,15 @@ Function Compare-ComputerGrpsBtn {
                                 }
                             }
                             else {
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHtml -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHtml -Markup "<br>"
                                     New-UDAlert -Severity 'error' -Text "Could not find $($CompComputer) in the AD!"
                                 }
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
-                                New-UDHtml -Markup "</br>"
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                New-UDHtml -Markup "<br>"
                                 New-UDAlert -Severity 'error' -Text "You need to type a computer name that you want to compare $($Computer) against!"
                             }
                         }
@@ -1054,15 +1054,16 @@ Function Compare-ComputerGrpsBtn {
                     New-UDProgress -Circular
                 } 
             } -Footer {
-                New-UDGrid -Item -Size 6 -Content { }
-                New-UDGrid -Item -Size 4 -Content { }
-                New-UDGrid -Item -Size 2 -Content { 
+                New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 8 -Children { }
+                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Children {
                     New-UDButton -text 'Compare' -Onclick {
                         Sync-UDElement -Id 'CompUsrGrpsTable'
                     }
 
                     New-UDButton -Text "Close" -OnClick {
-                        Sync-UDElement -Id $RefreshOnClose
+                        if ($null -ne $RefreshOnClose) {
+                            Sync-UDElement -Id $RefreshOnClose
+                        }
                         Hide-UDModal
                     }
                 }
@@ -1088,7 +1089,7 @@ function Show-SchedualTaskTableBtn {
         New-UDButton -Icon (New-UDIcon -Icon business_time) -size medium -Onclick {
             Show-UDModal -Header { "Schedual Tasks on $($Computer)" } -Content {
                 New-UDDynamic -Id 'Schedual' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowSchedualTask" -EventID 10 -EntryType Information -Message "$($User) did look at SchedualTask for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -1159,12 +1160,12 @@ function Show-SchedualTaskTableBtn {
                         )
                         $Scheduals = Invoke-Command -ComputerName $Computer -ScriptBlock { Get-ScheduledTask -taskpath "\" | select-object State, TaskName, Description }
                         if ([string]::IsNullOrEmpty($Scheduals)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Columns $Columns -Data $Scheduals -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
@@ -1202,12 +1203,12 @@ Function Restart-ADComputer {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon power_off) -size medium -Onclick {
             Show-UDModal -Header { "Reboot $($Computer)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 1 -Content { }
-                    New-UDGrid -Item -Size 10 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
                         New-UDTypography -Text "Are you sure that you want to reboot $($Computer)?"
                     }
-                    New-UDGrid -Item -Size 1 -Content { }
+                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
                 }
             } -Footer {
                 New-UDButton -Text "Yes" -OnClick { 
@@ -1238,8 +1239,8 @@ Function Disconnect-UserFromComputer {
     )
 
     Show-UDModal -Header { "Logout user from $($Computer)" } -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 12 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                 New-UDTypography -Text "Are you sure that you want to logout the user from $($Computer)?"
             }
         }
@@ -1274,13 +1275,13 @@ function Remove-TempFilesClientBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon broom) -size medium -Onclick {
             Show-UDModal -Header { "Clean temp files from $($Computer)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 3 -Content {}
-                    New-UDGrid -Item -Size 6 -Content { 
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children { 
                         New-UDTypography -Text "If you click in the editor and then press ctrl+f you can search"
                     }
-                    New-UDGrid -Item -Size 3 -Content { }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDCodeEditor -Id 'CleanClientCode' -ReadOnly -Height 450
                     }
                 }
@@ -1370,7 +1371,7 @@ Function Ping-ADComputer {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon hands_helping) -size medium -Onclick {
             Show-UDModal -Header { "Send ping to $($Computer)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
                     New-UDDynamic -Id 'Ping' -content {
                         $PingColumns = @(
                             New-UDTableColumn -Property PingSucceeded  -Title "Ping Success" -IncludeInExport -IncludeInSearch -DefaultSortColumn
@@ -1397,12 +1398,12 @@ Function Ping-ADComputer {
                         }
 
                         if ([string]::IsNullOrEmpty($PingResults)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -Id 'PingTable' -Data $PingResults -Columns $PingColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
                             }
@@ -1475,12 +1476,12 @@ Function Remove-EdgeSettings {
 
     Show-UDModal -Header { "Delete Edge settings on $($Computer)" } -Content {
         $Profiles = Get-WmiObject -ClassName Win32_UserProfile -ComputerName $Computer | Select-Object localpath | where-object { $_.LocalPath -like "C:\Users\*" } | ForEach-Object { $_.localpath.Replace("C:\Users\", "") }
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 12 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                 New-UDHTML -Markup "The users bookmarks will be restored after the settings has been deleted. Just incase, a backup of the bookmarks will be stored in C:\Temp"
             }
-            New-UDGrid -Item -Size 5 -Content { }
-            New-UDGrid -Item -Size 3 -Content {
+            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { }
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                 New-UDSelect -Id 'EdgeUser' -Option {
                     New-UDSelectOption -Name 'Select user...' -Value 1
                     foreach ($user in $profiles) {
@@ -1488,7 +1489,7 @@ Function Remove-EdgeSettings {
                     }
                 }
             }
-            New-UDGrid -Item -Size 4 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
         }
     } -Footer {
         New-UDButton -Text "Delete" -OnClick { 
@@ -1584,12 +1585,12 @@ Function Remove-ChromeSettings {
 
     Show-UDModal -Header { "Delete Chrome settings on $($Computer)" } -Content {
         $Profiles = Get-WmiObject -ClassName Win32_UserProfile -ComputerName $Computer | Select-Object localpath | where-object { $_.LocalPath -like "C:\Users\*" } | ForEach-Object { $_.localpath.Replace("C:\Users\", "") }
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 12 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                 New-UDHTML -Markup "The users bookmarks will be restored after the settings has been deleted. Just incase, a backup of the bookmarks will be stored in C:\Temp"
             }
-            New-UDGrid -Item -Size 5 -Content { }
-            New-UDGrid -Item -Size 3 -Content {
+            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { }
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                 New-UDSelect -Id 'ChromeUser' -Option {
                     New-UDSelectOption -Name 'Select user...' -Value 1
                     foreach ($user in $profiles) {
@@ -1597,7 +1598,7 @@ Function Remove-ChromeSettings {
                     }
                 }
             }
-            New-UDGrid -Item -Size 4 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
         }
     } -Footer {
         New-UDButton -Text "Delete" -OnClick { 
@@ -1695,15 +1696,15 @@ Function New-ADComputerFranky {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon plus) -size large -Onclick {
             Show-UDModal -Header { "Create new computer" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 5 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtComputerName' -Label 'Computer name (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtComputerDisplayName' -Label 'Enter Display Name for the computer' -FullWidth
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTextbox -Id 'txtComputerDescription' -Label 'Enter description' -FullWidth
                     }
                 }

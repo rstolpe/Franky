@@ -16,14 +16,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>..
 #>
 
-New-UDGrid -Spacing '1' -Container -Content {
-    New-UDGrid -Item -Size 1 -Content { }
-    New-UDGrid -Item -Size 10 -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 3 -Content {
+New-UDGrid -Spacing '1' -Container -Children {
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
+    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 12 -SmallSize 12 -Children {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 6 -Children {
                 New-UDTextbox -Id "txtComputerNameStart" -Icon (New-UDIcon -Icon 'desktop') -Label "Computer name (Wildcard *)" -FullWidth
             }
-            New-UDGrid -Item -Size 3 -Content {
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 4 -Children { 
                 New-UDButton -Icon (New-UDIcon -Icon 'search') -Size large -OnClick {
                     $ComputerName = (Get-UDElement -Id "txtComputerNameStart").value
 
@@ -39,71 +39,71 @@ New-UDGrid -Spacing '1' -Container -Content {
                 }
                 New-ADComputerFranky -BoxToSync "txtComputerNameStart" -RefreshOnClose "ComputerSearchStart" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
             }
-            New-UDGrid -Item -Size 6 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 2 -Children { }
         }
     }
-    New-UDGrid -Item -Size 1 -Content { }
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
 }
 
-New-UDGrid -Spacing '1' -Container -Content {
-    New-UDGrid -Item -Size 1 -Content { }
-    New-UDGrid -Item -Size 10 -Content {
+New-UDGrid -Spacing '1' -Container -Children {
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
+    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 12 -SmallSize 12 -Children {
         New-UDCard -Content {
             New-UDDynamic -Id 'ComputerSearchStart' -content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    $ComputerName = (Get-UDElement -Id "txtComputerNameStart").value
-                    if ($NULL -ne $ComputerName) {
-                        $ComputerName = $ComputerName.trim()
+                $ComputerName = (Get-UDElement -Id "txtComputerNameStart").value
+                if ($NULL -ne $ComputerName) {
+                    $ComputerName = $ComputerName.trim()
+                }
+
+                if ([string]::IsNullOrEmpty($ComputerName)) {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDAlert -Severity 'error' -Text "You must enter a computername!"
+                    }
+                }
+                else {
+                    $SearchComputerSam = $(try { Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'" -properties SamAccountName, Name } catch { $Null })
+                    $SearchComputerName = $(try { Get-ADComputer -Filter "Name -eq '$($ComputerName)'" -properties SamAccountName, Name } catch { $Null })
+                    $SearchComputerDisplayName = $(try { Get-ADComputer -Filter "DisplayName -eq '$($ComputerName)'" -properties SamAccountName, Name, DisplayName } catch { $Null })
+                    $SearchComputerFQDN = $(try { Get-ADComputer -Filter "DNSHostName -eq '$($ComputerName)'" -properties DNSHostName, samaccountname, name } catch { $Null })
+
+                    if ($Null -ne $SearchComputerName) {
+                        $ComputerName = $SearchComputerName.samaccountname -replace ".$"
+                        $ConvertToComputerName = $SearchComputerName.name
+                        $SearchFor = $SearchComputerName.name
+                    }
+                    elseif ($Null -ne $SearchComputerSam) {
+                        $ComputerName = $SearchComputerSam.samaccountname -replace ".$"
+                        $ConvertToComputerName = $SearchComputerSam.name
+                        $SearchFor = $SearchComputerSam.samaccountname
+                    }
+                    elseif ($NULL -ne $SearchComputerDisplayName) {
+                        $ComputerName = $SearchComputerDisplayName.samaccountname -replace ".$"
+                        $ConvertToComputerName = $SearchComputerDisplayName.name
+                        $SearchFor = $SearchComputerDisplayName.DisplayName
+                    }
+                    elseif ($Null -ne $SearchComputerFQDN) {
+                        $ComputerName = $SearchComputerFQDN.samaccountname -replace ".$"
+                        $ConvertToComputerName = $SearchComputerFQDN.name
+                        $SearchFor = $SearchComputerFQDN.DNSHostName
                     }
 
-                    if ([string]::IsNullOrEmpty($ComputerName)) {
-                        New-UDGrid -Item -Size 12 -Content {
-                            New-UDAlert -Severity 'error' -Text "You must enter a computername!"
+                    if ($Null -ne $SearchFor) { 
+                        if ($ActiveEventLog -eq "True") {
+                            Write-EventLog -LogName $EventLogName -Source "ComputerSearch" -EventID 10 -EntryType Information -Message "$($User) did search for $($ComputerName)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
-                    }
-                    else {
-                        $SearchComputerSam = $(try { Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'" -properties SamAccountName, Name } catch { $Null })
-                        $SearchComputerName = $(try { Get-ADComputer -Filter "Name -eq '$($ComputerName)'" -properties SamAccountName, Name } catch { $Null })
-                        $SearchComputerDisplayName = $(try { Get-ADComputer -Filter "DisplayName -eq '$($ComputerName)'" -properties SamAccountName, Name, DisplayName } catch { $Null })
-                        $SearchComputerFQDN = $(try { Get-ADComputer -Filter "DNSHostName -eq '$($ComputerName)'" -properties DNSHostName, samaccountname, name } catch { $Null })
-
-                        if ($Null -ne $SearchComputerName) {
-                            $ComputerName = $SearchComputerName.samaccountname -replace ".$"
-                            $ConvertToComputerName = $SearchComputerName.name
-                            $SearchFor = $SearchComputerName.name
-                        }
-                        elseif ($Null -ne $SearchComputerSam) {
-                            $ComputerName = $SearchComputerSam.samaccountname -replace ".$"
-                            $ConvertToComputerName = $SearchComputerSam.name
-                            $SearchFor = $SearchComputerSam.samaccountname
-                        }
-                        elseif ($NULL -ne $SearchComputerDisplayName) {
-                            $ComputerName = $SearchComputerDisplayName.samaccountname -replace ".$"
-                            $ConvertToComputerName = $SearchComputerDisplayName.name
-                            $SearchFor = $SearchComputerDisplayName.DisplayName
-                        }
-                        elseif ($Null -ne $SearchComputerFQDN) {
-                            $ComputerName = $SearchComputerFQDN.samaccountname -replace ".$"
-                            $ConvertToComputerName = $SearchComputerFQDN.name
-                            $SearchFor = $SearchComputerFQDN.DNSHostName
-                        }
-
-                        if ($Null -ne $SearchFor) { 
-                            if ($ActiveEventLog -eq "True") {
-                                Write-EventLog -LogName $EventLogName -Source "ComputerSearch" -EventID 10 -EntryType Information -Message "$($User) did search for $($ComputerName)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                            }
+                        New-UDGrid -Spacing '1' -Container -Children {
                             New-UDDynamic -Id 'ComputerSearch' -content {
                                 if (Test-WSMan -ComputerName $ConvertToComputerName -ErrorAction SilentlyContinue) {
                                     $SystInfo = Get-SysInfo -Computer $ConvertToComputerName                                  
                                 }
                                 else {
                                     $SystInfo = ""
-                                    New-UDGrid -Item -Size 12 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($ConvertToComputerName), the administrating options are limited!"
                                     }
                                 }
                                 $SearchADComputer = Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'"  -Properties CN, DisplayName, DNSHostName, OperatingSystem, Description, CanonicalName, DistinguishedName, Created, SamAccountName, OperatingSystemVersion, whenChanged, SID, IPv4Address, IPv6Address, PrimaryGroup, ManagedBy, Location, Enabled, LastLogonDate
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     Restart-ADComputer -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Ping-ADComputer -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Show-MonitorInfoBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
@@ -121,7 +121,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                                     }
                                     New-RefreshUDElementBtn -RefreshUDElement 'ComputerSearch'
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     New-UDSelect -id 'UserImpact' -Option {
                                         New-UDSelectOption -Name 'User Impact...' -Value 1
                                         New-UDSelectOption -Name "Logout current user from $($ComputerName)" -Value 2
@@ -157,147 +157,147 @@ New-UDGrid -Spacing '1' -Container -Content {
                                         }
                                     }
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHTML -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHTML -Markup "<br>"
                                 }
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     New-UDHtml -Markup "<b>Information about $($ComputerName)</b>"
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Enabled?"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Enabled)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Set-EnableDisableADAccountBtn -CurrentDescription $SearchADComputer.Description -ObjectStatus $SearchADComputer.Enabled -ObjectToChange "Computer" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearch" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Display name"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.DisplayName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "DisplayName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.DisplayName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "CN name"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.CN)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "CN" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.CN -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SamAccountName"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.SamAccountName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "SamAccountName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.SamAccountName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Description"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Description)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { 
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { 
                                     Edit-DescriptionBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearch" -CurrentValue $SearchADComputer.Description -ChangeDescriptionObject 'Computer' -ChangeObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SID"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.SID)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "OU Placement"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.DistinguishedName)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Location"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Location)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Primary Group"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     $ConvertPrimaryGroup = $(try { $SearchADComputer.PrimaryGroup | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     if ($null -ne $ConvertPrimaryGroup) {
                                         New-UDTypography -Text "$($ConvertPrimaryGroup)"
                                     }
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     $ConvertPrimaryGroup = $(try { $SearchADComputer.PrimaryGroup | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     Edit-PrimaryGroup -ObjectType "Computer" -ObjectName $ComputerName -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "ComputerSearch" -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Managed By"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     $ComputerManagedBy = $(try { $SearchADComputer.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     if ($null -ne $ComputerManagedBy) {
                                         New-UDTypography -Text "$($ComputerManagedBy)"
                                     }
                                 }
-                                New-UDGrid -Item -Size 2 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     $ComputerManagedBy = $(try { $SearchADComputer.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                     Edit-ManagedByBtn -CurrentValue $ComputerManagedBy -ObjectType "Computer" -ObjectName $ComputerName -RefreshOnClose "ComputerSearch" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Object was created"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Created)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Object was last changed"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     New-UDTypography -Text "$($SearchADComputer.whenChanged)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
-                                New-UDGrid -Item -Size 4 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Last seen in the domain"
                                 }
-                                New-UDGrid -Item -Size 6 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                     $GetLastDate = Get-ADLastSeen -ObjectName $ComputerName -ObjectType "Computer"
                                     New-UDTypography -Text "$($GetLastDate)"
                                 }
-                                New-UDGrid -Item -Size 2 -Content { }
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
 
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHtml -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHtml -Markup "<br>"
                                     New-UDHtml -Markup "<B>OS information</b>"
                                     New-UDTransition -Id 'OSInformation' -Content {
-                                        New-UDGrid -Spacing '1' -Container -Content {
-                                            New-UDGrid -Item -Size 12 -Content {
-                                                New-UDHtml -Markup "</br>"
+                                        New-UDGrid -Spacing '1' -Container -Children {
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDHtml -Markup "<br>"
                                             }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Version"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 New-UDTypography -Text "$($SearchADComputer.OperatingSystem) Version: $($SearchADComputer.OperatingSystemVersion)"
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Installation date"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -305,11 +305,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.OS.InstallDate)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Up-Time"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -317,11 +317,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.UpTime.days) Days $($SystInfo.UpTime.hours) h $($SystInfo.UpTime.minutes) min"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Current logged in user"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if (([string]::IsNullOrEmpty($SystInfo.Computer.UserName))) {
                                                     New-UDTypography -Text "No user are logged in"
                                                 }
@@ -329,11 +329,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.Computer.UserName)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Last logged in user"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -342,7 +342,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($LastLoggedOn.User) ($($LastLoggedOn.TimeCreated))"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
                                         }
                                     } -Collapse -CollapseHeight 100 -Timeout 1000
                                 }
@@ -353,17 +353,17 @@ New-UDGrid -Spacing '1' -Container -Content {
                                     } 
                                 }
 
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     New-UDHtml -Markup "<B>Hardware information</b>"
                                     New-UDTransition -Id 'HardwareInformation' -Content {
-                                        New-UDGrid -Spacing '1' -Container -Content {
-                                            New-UDGrid -Item -Size 12 -Content {
-                                                New-UDHtml -Markup "</br>"
+                                        New-UDGrid -Spacing '1' -Container -Children {
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDHtml -Markup "<br>"
                                             }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Manufacturer"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -371,11 +371,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.Computer.Manufacturer)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Model"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -383,7 +383,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.Computer.SystemFamily)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -391,10 +391,10 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.Computer.Model)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Serial number"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -402,11 +402,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.BIOS.SerialNumber)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "Bios Version"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -414,11 +414,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.BIOS.BIOSVersion)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "RAM"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -426,11 +426,11 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.RAM)GB"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "C:"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content { 
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children { 
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -438,7 +438,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.HDD.Free)GB free of $($SystInfo.HDD.total)GB"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
                                         }
                                     } -Collapse -CollapseHeight 100 -Timeout 1000
                                 }
@@ -450,38 +450,38 @@ New-UDGrid -Spacing '1' -Container -Content {
                                 }
 
 
-                                New-UDGrid -Item -Size 12 -Content {
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     New-UDHtml -Markup "<B>Network information</b>"
                                     New-UDTransition -Id 'NetworkInformation' -Content {
-                                        New-UDGrid -Spacing '1' -Container -Content {
-                                            New-UDGrid -Item -Size 12 -Content {
-                                                New-UDHtml -Markup "</br>"
+                                        New-UDGrid -Spacing '1' -Container -Children {
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDHtml -Markup "<br>"
                                             }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "DNS/Hostname"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 New-UDTypography -Text "$($SearchADComputer.DNSHostName)"
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "IPv4 Address"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 New-UDTypography -Text "$($SearchADComputer.IPv4Address)"
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "IPv6 Address"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 New-UDTypography -Text "$($SearchADComputer.IPv6Address)"
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
-                                            New-UDGrid -Item -Size 4 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                                            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                                 New-UDTypography -Text "MAC address"
                                             }
-                                            New-UDGrid -Item -Size 6 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                                 if ([string]::IsNullOrEmpty($SystInfo)) {
                                                     New-UDTypography -Text "N/A"
                                                 }
@@ -489,7 +489,7 @@ New-UDGrid -Spacing '1' -Container -Content {
                                                     New-UDTypography -Text "$($SystInfo.NetworkMac)"
                                                 }
                                             }
-                                            New-UDGrid -Item -Size 2 -Content { }
+                                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
                                         }
                                     } -Collapse -CollapseHeight 100 -Timeout 1000
                                 }
@@ -500,8 +500,8 @@ New-UDGrid -Spacing '1' -Container -Content {
                                     } 
                                 }
 
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHTML -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHTML -Markup "<br>"
                                 }
                             } -LoadingComponent {
                                 New-UDProgress -Circular
@@ -524,16 +524,16 @@ New-UDGrid -Spacing '1' -Container -Content {
                                 )
 
                                 if ([string]::IsNullOrEmpty($SearchComputerGroupData)) {
-                                    New-UDGrid -Item -Size 12 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'info' -Text "$($ComputerName) are not a member of any groups"
                                     }
                                 }
                                 else {
-                                    New-UDGrid -Item -Size 12 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         $SearchComputerOption = New-UDTableTextOption -Search "Search"
                                         New-UDTable -Id 'ComputerSearchTable' -Data $SearchComputerGroupData -Columns $SearchComputerGroupColumns -DefaultSortDirection "Ascending" -TextOption $SearchComputerOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50) -ShowSelection
                                     }
-                                    New-UDGrid -Item -Size 5 -Content {
+                                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                                         New-UDTooltip -TooltipContent {
                                             New-UDTypography -Text "Remove $($ComputerName) from the selected groups"
                                         } -content { 
@@ -563,12 +563,13 @@ New-UDGrid -Spacing '1' -Container -Content {
                                             }
                                         }
                                     }
-                                    New-UDGrid -Item -Size 1 -Content { }
+                                    New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
                                 }
-                                New-UDGrid -Item -Size 3 -Content { 
+                                New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 3 -Children { }
+                                New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 5 -Children { 
                                     New-UDTextbox -Id "txtSearchComputerADD" -Icon (New-UDIcon -Icon 'users') -Label "Enter group name" -FullWidth
                                 }
-                                New-UDGrid -Item -Size 3 -Content { 
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Children { 
                                     New-UDTooltip -TooltipContent {
                                         New-UDTypography -Text "Add $($ComputerName) to the group"
                                     } -content { 
@@ -602,10 +603,10 @@ New-UDGrid -Spacing '1' -Container -Content {
                                 New-UDProgress -Circular
                             }
                         }
-                        else { 
-                            New-UDGrid -Item -Size 12 -Content {
-                                New-UDAlert -Severity 'error' -Text "Could not find $($ComputerName) in the AD!"
-                            }
+                    }
+                    else { 
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                            New-UDAlert -Severity 'error' -Text "Could not find $($ComputerName) in the AD!"
                         }
                     }
                 }
@@ -614,5 +615,5 @@ New-UDGrid -Spacing '1' -Container -Content {
             }
         }
     }
-    New-UDGrid -Item -Size 1 -Content { }
+    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -Children { }
 }

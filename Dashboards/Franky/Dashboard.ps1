@@ -18,7 +18,7 @@
 
 # LOGG SETTINGS!
 # If you want log actions in eventlog then change this to $True, and remember to run the "InstallLog.ps1" script before.
-[bool]$ActiveEventLog = $false
+[bool]$ActiveEventLog = $true
 
 <# OPTIONAL SETTINGS
 Here you have two options, either activate Load Balancing or if you only have one PowerShell Universal server you should just

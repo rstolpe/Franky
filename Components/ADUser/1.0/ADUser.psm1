@@ -33,13 +33,13 @@ function Unlock-ADUserAccountBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon lock_open) -size small -Onclick { 
             Show-UDModal -Header { "Unlock $($UserName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
-                        New-UDGrid -Item -Size 1 -Content { }
-                        New-UDGrid -Item -Size 10 -Content { 
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children {}
+                        New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
                             New-UDTypography -Text "Are you sure that you want to unlock $($UserName)?"
                         }
-                        New-UDGrid -Item -Size 1 -Content { }
+                        New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children {}
                     }
                 }
             } -Footer {
@@ -91,9 +91,9 @@ function New-PasswordADUserBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon key) -size medium -Onclick {
             Show-UDModal -Header { "Change password for $($UserName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
-                        New-UDHTML -Markup "Enter the desired password, the password must be at least 10 characters.</br>"
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDHTML -Markup "Enter the desired password, the password must be at least 10 characters.<br>"
                         New-UDDynamic -Id 'generatepassword' -content {
                             $RndPwd = New-RndPassword
                             New-UDTypography -Text "$($RndPwd)" -Style @{ 'font-weight' = '700' }
@@ -117,16 +117,16 @@ function New-PasswordADUserBtn {
                                 Sync-UDElement -Id 'generatepassword'
                             }
                         }
-                        New-UDHTML -Markup "</br>"
+                        New-UDHTML -Markup "<br>"
                     }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -id "txtpw1" -Icon (New-UDIcon -Icon 'key') -Value '' -Label 'New password' -Type password -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -id "txtpw2" -Icon (New-UDIcon -Icon 'key') -Value '' -Label 'Verify password' -Type password -FullWidth
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDCheckBox -id "chckpwchange" -Label 'Set so user need to change there password at next login?' -LabelPlacement end
                     }
                 }
@@ -200,13 +200,13 @@ function New-ADAccountExpirationDateBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon user_clock) -size small -Onclick {
             Show-UDModal -Header { "Change expiration date for $($UserName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
-                        New-UDGrid -Item -Size 1 -Content { }
-                        New-UDGrid -Item -Size 10 -Content { 
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
+                        New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
                             New-UDDatePicker -id "pickDate" -Format "yyyy-MM-dd"
                         }
-                        New-UDGrid -Item -Size 1 -Content { }
+                        New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children {}
                     }
                 }
             } -Footer {
@@ -253,14 +253,14 @@ Function Compare-ADUserGroupsBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon not_equal) -size medium -Onclick {
             Show-UDModal -Header { "Compare $($UserName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 5 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtCompUsr' -Label "Compare $($UserName) against?" -FullWidth
                     }
-                    New-UDGrid -Item -Size 7 -Content { }
+                    New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
                 }
                 New-UDDynamic -Id 'CompUsrGrpsTable' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         $CompUsr = (Get-UDElement -Id "txtCompUsr").value
                         if ($NULL -ne $CompUsr) {
                             $CompUsr = $CompUsr.trim()
@@ -269,13 +269,16 @@ Function Compare-ADUserGroupsBtn {
                         if ($null -ne $CompUsr) {
                             if (Get-ADUser -Filter "samaccountname -eq '$($CompUsr)'" -Properties samAccountName) {
                                 if ($UserName -eq $CompUsr) {
-                                    New-UDGrid -Item -Size 12 -Content {
-                                        New-UDHtml -Markup "</br>"
+                                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                        New-UDHtml -Markup "<br>"
                                         New-UDAlert -Severity 'error' -Text "You can't compare the user against it self!"
                                     }
                                 }
                                 else {
                                     try {
+                                        if ($ActiveEventLog -eq "True") {
+                                            Write-EventLog -LogName $EventLogName -Source "CompareUserADGroups" -EventID 10 -EntryType Information -Message "$($User) did compare $($Computer) against $($CompComputer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                        }
                                         $Columns = @(
                                             New-UDTableColumn -Title '.' -Property '.' -render {
                                                 New-UDTooltip -TooltipContent {
@@ -305,15 +308,45 @@ Function Compare-ADUserGroupsBtn {
                                         $CompData = Compare-Object -ReferenceObject $obj -DifferenceObject $obj2 -Property SamAccountName | Where-Object { $_.SideIndicator -eq "=>" } | Foreach-Object { Get-ADGroup -Identity $_.SamAccountName -Property Displayname, Description | Select-Object SamAccountName, Description }
                 
                                         if ([string]::IsNullOrEmpty($CompData)) {
-                                            New-UDGrid -Item -Size 12 -Content {
-                                                New-UDHtml -Markup "</br>"
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDHtml -Markup "<br>"
                                                 New-UDAlert -Severity 'success' -Text "$($UserName) are member in all groups that $($CompUsr) are member in!"
                                             }
                                         }
                                         else {
-                                            New-UDGrid -Item -Size 12 -Content {
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                                 New-UDTable -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
+                                            }
+                                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                                New-UDButton -Text "Add to selected" -OnClick {
+                                                    $CompTable = Get-UDElement -Id "CompTable"
+                                                    $SelectedGrp = @($CompTable.selectedRows.SamAccountName)
+
+                                                    if ($null -ne $CompTable.selectedRows.SamAccountName) {
+                                                        try {
+                                                            @($CompTable.selectedRows.SamAccountName.ForEach( { 
+                                                                        Add-ADGroupMember -Identity $_ -Members $UserName 
+                                                                        if ($ActiveEventLog -eq "True") {
+                                                                            Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($UserName) to the group $($_)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                                        }
+                                                                    } ) )
+                                    
+                                                            Show-UDToast -Message "$($UserName) are now member of $($SelectedGrp -join ",")!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                            Sync-UDElement -Id 'CompUsrGrpsTable'
+                                                        }
+                                                        catch {
+                                                            Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                            Break
+                                                        }
+
+                                                    }
+                                                    else {
+                                                        Show-UDToast -Message "You have not selected any group, you need to select at least one group!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                        Break
+                                                    }
+
+                                                }
                                             }
                                         }
                                     }
@@ -324,15 +357,15 @@ Function Compare-ADUserGroupsBtn {
                                 }
                             }
                             else {
-                                New-UDGrid -Item -Size 12 -Content {
-                                    New-UDHtml -Markup "</br>"
+                                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                    New-UDHtml -Markup "<br>"
                                     New-UDAlert -Severity 'error' -Text "Can't find $($CompUsr) in the AD!"
                                 }
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
-                                New-UDHtml -Markup "</br>"
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                New-UDHtml -Markup "<br>"
                                 New-UDAlert -Severity 'error' -Text "You must select a user to compare $($UserName) against!"
                             }
                         }
@@ -341,38 +374,8 @@ Function Compare-ADUserGroupsBtn {
                     New-UDProgress -Circular
                 } 
             } -Footer {
-                New-UDGrid -Item -Size 6 -Content { 
-                    New-UDButton -Text "Add to selected" -OnClick {
-                        $CompTable = Get-UDElement -Id "CompTable"
-                        $SelectedGrp = @($CompTable.selectedRows.SamAccountName)
-
-                        if ($null -ne $CompTable.selectedRows.SamAccountName) {
-                            try {
-                                @($CompTable.selectedRows.SamAccountName.ForEach( { 
-                                            Add-ADGroupMember -Identity $_ -Members $UserName 
-                                            if ($ActiveEventLog -eq "True") {
-                                                Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($UserName) to the group $($_)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                            }
-                                        } ) )
-                                    
-                                Show-UDToast -Message "$($UserName) are now member of $($SelectedGrp -join ",")!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                Sync-UDElement -Id 'CompUsrGrpsTable'
-                            }
-                            catch {
-                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                Break
-                            }
-
-                        }
-                        else {
-                            Show-UDToast -Message "You have not selected any group, you need to select at least one group!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                            Break
-                        }
-
-                    }
-                }
-                New-UDGrid -Item -Size 4 -Content { }
-                New-UDGrid -Item -Size 2 -Content { 
+                New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 8 -Content { }
+                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Content { 
                     New-UDButton -text 'Compare' -Onclick {
                         Sync-UDElement -Id 'CompUsrGrpsTable'
                     }
@@ -407,7 +410,7 @@ function Add-MultiUsers {
         New-UDButton -Icon (New-UDIcon -Icon users) -size large -Onclick {
             Show-UDModal -Header { "Add multiple users at the same time" } -Content {
                 New-UDDynamic -Id 'MoreUserSearchGroupList' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         $MoreADUserData = Get-ADUser -Filter *  -Properties samAccountName, Surname, Givenname, EmailAddress, Description | Select-Object @("Givenname", "Surname", "samAccountName", "EmailAddress", "Description")
                         $MoreADUserColumns = @(
                             New-UDTableColumn -Property samAccountName -Title "Username" -IncludeInSearch -DefaultSortColumn
@@ -416,7 +419,7 @@ function Add-MultiUsers {
                             New-UDTableColumn -Property EmailAddress -Title "Mail" -IncludeInSearch
                             New-UDTableColumn -Property Description -Title "Description" -IncludeInSearch
                         )
-                        New-UDGrid -Item -Size 12 -Content {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                             New-UDTable -Id 'MoreADTable' -Data $MoreADUserData -Columns $MoreADUserColumns -Title "Select user" -DefaultSortDirection “Ascending” -ShowSearch -ShowPagination -Dense -Sort -PageSize 10 -PageSizeOptions @(10, 20) -DisablePageSizeAll -ShowSelection
                         }
                     }
@@ -665,15 +668,15 @@ function Show-WhatUserManage {
     )
 
     New-UDTooltip -TooltipContent {
-        New-UDTypography -Text "Show what objects $($UserName) are manger of"
+        New-UDTypography -Text "Show what objects $($UserName) is manger of"
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon tools) -size medium -Onclick {
-            Show-UDModal -Header { "Show what objects $($UserName) are manger of" } -Content {
+            Show-UDModal -Header { "Show what objects $($UserName) is manger of" } -Content {
                 New-UDDynamic -Id 'Manager' -content {
                     if ($ActiveEventLog -eq "True") {
                         Write-EventLog -LogName $EventLogName -Source "ShowWhatUserManaging" -EventID 10 -EntryType Information -Message "$($User) has looked what $($UserName) are managing`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                     }
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         $MoreADUserData = Get-ADUser -Identity $UserName -Properties managedObjects | select-object managedObjects -ExpandProperty managedObjects | Foreach-Object { 
                             [PSCustomObject]@{
                                 ManageObjects     = $_.Replace("CN=", "").Split(",") | Select-Object -First 1
@@ -704,20 +707,102 @@ function Show-WhatUserManage {
                             New-UDTableColumn -Property ManageObjects -Title "Object name" -IncludeInSearch -IncludeInExport -DefaultSortColumn
                             New-UDTableColumn -Property DistinguishedName -Title "Distinguished name" -IncludeInSearch -IncludeInExport
                         )
-                        New-UDGrid -Item -Size 12 -Content {
-                            New-UDTable -Id 'MoreADTable' -Data $MoreADUserData -Columns $MoreADUserColumns -DefaultSortDirection “Ascending” -Export -ExportOption "xlsx, PDF, CSV" -ShowSearch -ShowPagination -Dense -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40)
+                        if ([string]::IsNullOrEmpty($MoreADUserData)) {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                New-UDAlert -Severity 'info' -Text "$($UserName) is not managing any groups!"
+                            }
+                        }
+                        else {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                New-UDTable -Id 'MoreADTable' -Data $MoreADUserData -Columns $MoreADUserColumns -DefaultSortDirection “Ascending” -Export -ExportOption "xlsx, PDF, CSV" -ShowSearch -ShowPagination -Dense -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40) -ShowSelection
+                            }
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "Remove from selected"
+                                } -content { 
+                                    New-UDButton -Icon (New-UDIcon -Icon trash) -Onclick {
+                                        $ManagerTable = Get-UDElement -Id "MoreADTable"
+                                        $ManagerSelected = @($ManagerTable.selectedRows.DistinguishedName)
+                                        if ($Null -ne $ManagerTable.selectedRows.DistinguishedName) {                  
+                                            try {
+                                                @($ManagerTable.selectedRows.DistinguishedName.ForEach( { 
+                                                            Set-ADObject -Identity $_ -Clear Managedby
+                                                            if ($ActiveEventLog -eq "True") {
+                                                                Write-EventLog -LogName $EventLogName -Source "RemoveUserAsManagerFromObject" -EventID 10 -EntryType Information -Message "$($User) has removed $($UserName) as manger for $($_)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                            }
+                                                        } ) )
+                                                Show-UDToast -Message "$($UserName) don't managing $($ManagerSelected -join ",") anymore!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Sync-UDElement -Id "Manager"
+                                            }
+                                            catch {
+                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Break
+                                            }
+                                        }
+                                        else {
+                                            Show-UDToast -Message "You have not selected any group!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            Break
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 } -LoadingComponent {
                     New-UDProgress -Circular
                 }
             } -Footer {
-                New-UDButton -Text "Refresh" -OnClick {
-                    Sync-UDElement -Id "Manager"
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 5 -Children {
+                    New-UDTextbox -Id "txtADDasManger" -Icon (New-UDIcon -Icon 'users') -Label "Enter group that you want to manage" -FullWidth
                 }
-                New-UDButton -Text "Close" -OnClick {
-                    Hide-UDModal
-                }                         
+                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 3 -Children {
+                    New-UDTooltip -TooltipContent {
+                        New-UDTypography -Text "Add $($UserName) as manager to selected group"
+                    } -Content { 
+                        New-UDButton -Icon (New-UDIcon -Icon user_plus) -Onclick { 
+                            $AddToGroup = (Get-UDElement -Id "txtADDasManger").value
+                            $AddToGroup = $AddToGroup.trim()
+
+                            $CheckGroup = $(try { Get-ADGroup -Filter "samaccountname -eq '$($AddToGroup)'" } catch { $Null })
+                            $CheckManager = $(try { Get-ADGroup -Filter "samaccountname -eq '$($AddToGroup)'" -properties managedby | Select-Object managedby -ExpandProperty managedby } catch { $Null })
+
+                            if ($Null -ne $CheckGroup ) { 
+                                if ([string]::IsNullOrEmpty($CheckManager)) {
+                                    try {
+                                        Set-ADGroup -Identity $AddToGroup -ManagedBy $UserName
+                                        Show-UDToast -Message "$($UserName) is now manager of $($AddToGroup)!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                        if ($ActiveEventLog -eq "True") {
+                                            Write-EventLog -LogName $EventLogName -Source "ChangeUserManager" -EventID 10 -EntryType Information -Message "$($User) did change manager to $($UserName) for $($AddToGroup)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                        }
+                                        Sync-UDElement -Id 'Manager'
+                                    }
+                                    catch {
+                                        Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                        Break
+                                    }
+                                }
+                                else {
+                                    $WriteManager = $CheckManager.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 }
+                                    Show-UDToast -Message "The group $($AddToGroup) already has a manager $($WriteManager), you need to remove it first!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                    Break
+                                }
+                            }
+                            else {
+                                Show-UDToast -Message "The group $($AddToGroup) did not exist in the AD!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                Break
+                            }
+                        }
+                    }
+                }
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 3 -SmallSize 2 -Children { }
+                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 3 -SmallSize 5 -Children {
+                    New-UDButton -Text "Refresh" -Size medium -OnClick {
+                        Sync-UDElement -Id "Manager"
+                    }
+                    New-UDButton -Text "Close" -Size medium -OnClick {
+                        Hide-UDModal
+                    }     
+                }                    
             } -FullWidth -MaxWidth 'lg' -Persistent
         }
     }
@@ -755,75 +840,75 @@ function Edit-ADUserInfo {
                         try {
                             switch ($ParamToChange) {
                                 EmailAddress {
-                                    Set-ADUser -Identity $($UserName) -EmailAddress $NewParam
+                                    Set-ADUser -Identity $UserName -EmailAddress $NewParam
                                 }
                                 HomePhone {
-                                    Set-ADUser -Identity $($UserName) -HomePhone $NewParam
+                                    Set-ADUser -Identity $UserName -HomePhone $NewParam
                                 }
                                 MobilePhone {
-                                    Set-ADUser -Identity $($UserName) -MobilePhone $NewParam
+                                    Set-ADUser -Identity $UserName -MobilePhone $NewParam
                                 }
                                 OfficePhone {
-                                    Set-ADUser -Identity $($UserName) -OfficePhone $NewParam
+                                    Set-ADUser -Identity $UserName -OfficePhone $NewParam
                                 }
                                 FAX {
-                                    Set-ADUser -Identity $($UserName) -FAX $NewParam
+                                    Set-ADUser -Identity $UserName -FAX $NewParam
                                 }
                                 StreetAddress {
-                                    Set-ADUser -Identity $($UserName) -StreetAddress $NewParam
+                                    Set-ADUser -Identity $UserName -StreetAddress $NewParam
                                 }
                                 POBOX {
-                                    Set-ADUser -Identity $($UserName) -POBOX $NewParam
+                                    Set-ADUser -Identity $UserName -POBOX $NewParam
                                 }
                                 State {
-                                    Set-ADUser -Identity $($UserName) -State $NewParam
+                                    Set-ADUser -Identity $UserName -State $NewParam
                                 }
                                 City {
-                                    Set-ADUser -Identity $($UserName) -City $NewParam
+                                    Set-ADUser -Identity $UserName -City $NewParam
                                 }
                                 PostalCode {
-                                    Set-ADUser -Identity $($UserName) -PostalCode $NewParam
+                                    Set-ADUser -Identity $UserName -PostalCode $NewParam
                                 }
                                 Givenname {
-                                    Set-ADUser -Identity $($UserName) -Givenname $NewParam
+                                    Set-ADUser -Identity $UserName -Givenname $NewParam
                                 }
                                 Surname {
-                                    Set-ADUser -Identity $($UserName) -Surname $NewParam
+                                    Set-ADUser -Identity $UserName -Surname $NewParam
                                 }
                                 Company {
-                                    Set-ADUser -Identity $($UserName) -Company $NewParam
+                                    Set-ADUser -Identity $UserName -Company $NewParam
                                 }
                                 Title {
-                                    Set-ADUser -Identity $($UserName) -Title $NewParam
+                                    Set-ADUser -Identity $UserName -Title $NewParam
                                 }
                                 Division {
-                                    Set-ADUser -Identity $($UserName) -Division $NewParam
+                                    Set-ADUser -Identity $UserName -Division $NewParam
                                 }
                                 Department {
-                                    Set-ADUser -Identity $($UserName) -Department $NewParam
+                                    Set-ADUser -Identity $UserName -Department $NewParam
                                 }
                                 Office {
-                                    Set-ADUser -Identity $($UserName) -Office $NewParam
+                                    Set-ADUser -Identity $UserName -Office $NewParam
                                 }
                                 Manager {
                                     if (Get-ADUser -Filter "Samaccountname -eq '$($NewParam)'") {
-                                        Set-ADUser -Identity $($UserName) -Manager $NewParam
+                                        Set-ADUser -Identity $UserName -Manager $NewParam
                                     }
                                     else {
                                         $ManagerCheck = "False"
                                     }
                                 }
                                 ProfilePath {
-                                    Set-ADUser -Identity $($UserName) -ProfilePath $NewParam
+                                    Set-ADUser -Identity $UserName -ProfilePath $NewParam
                                 }
                                 ScriptPath {
-                                    Set-ADUser -Identity $($UserName) -ScriptPath $NewParam
+                                    Set-ADUser -Identity $UserName -ScriptPath $NewParam
                                 }
                                 HomeDirectory {
-                                    Set-ADUser -Identity $($UserName) -HomeDirectory $NewParam
+                                    Set-ADUser -Identity $UserName -HomeDirectory $NewParam
                                 }
                                 HomeDrive {
-                                    Set-ADUser -Identity $($UserName) -HomeDrive $NewParam
+                                    Set-ADUser -Identity $UserName -HomeDrive $NewParam
                                 }
                             }
                             if ($ManagerCheck -eq "False") {
@@ -851,70 +936,70 @@ function Edit-ADUserInfo {
                     try {
                         switch ($ParamToChange) {
                             EmailAddress {
-                                Set-ADUser -Identity $($UserName) -EmailAddress $Null
+                                Set-ADUser -Identity $UserName -EmailAddress $Null
                             }
                             HomePhone {
-                                Set-ADUser -Identity $($UserName) -HomePhone $Null
+                                Set-ADUser -Identity $UserName -HomePhone $Null
                             }
                             MobilePhone {
-                                Set-ADUser -Identity $($UserName) -MobilePhone $Null
+                                Set-ADUser -Identity $UserName -MobilePhone $Null
                             }
                             OfficePhone {
-                                Set-ADUser -Identity $($UserName) -OfficePhone $Null
+                                Set-ADUser -Identity $UserName -OfficePhone $Null
                             }
                             FAX {
-                                Set-ADUser -Identity $($UserName) -FAX $Null
+                                Set-ADUser -Identity $UserName -FAX $Null
                             }
                             StreetAddress {
-                                Set-ADUser -Identity $($UserName) -StreetAddress $Null
+                                Set-ADUser -Identity $UserName -StreetAddress $Null
                             }
                             POBOX {
-                                Set-ADUser -Identity $($UserName) -POBOX $Null
+                                Set-ADUser -Identity $UserName -POBOX $Null
                             }
                             State {
-                                Set-ADUser -Identity $($UserName) -State $Null
+                                Set-ADUser -Identity $UserName -State $Null
                             }
                             City {
-                                Set-ADUser -Identity $($UserName) -City $Null
+                                Set-ADUser -Identity $UserName -City $Null
                             }
                             PostalCode {
-                                Set-ADUser -Identity $($UserName) -PostalCode $Null
+                                Set-ADUser -Identity $UserName -PostalCode $Null
                             }
                             Givenname {
-                                Set-ADUser -Identity $($UserName) -Givenname $Null
+                                Set-ADUser -Identity $UserName -Givenname $Null
                             }
                             Surname {
-                                Set-ADUser -Identity $($UserName) -Surname $Null
+                                Set-ADUser -Identity $UserName -Surname $Null
                             }
                             Company {
-                                Set-ADUser -Identity $($UserName) -Company $Null
+                                Set-ADUser -Identity $UserName -Company $Null
                             }
                             Title {
-                                Set-ADUser -Identity $($UserName) -Title $Null
+                                Set-ADUser -Identity $UserName -Title $Null
                             }
                             Division {
-                                Set-ADUser -Identity $($UserName) -Division $Null
+                                Set-ADUser -Identity $UserName -Division $Null
                             }
                             Department {
-                                Set-ADUser -Identity $($UserName) -Department $Null
+                                Set-ADUser -Identity $UserName -Department $Null
                             }
                             Office {
-                                Set-ADUser -Identity $($UserName) -Office $Null
+                                Set-ADUser -Identity $UserName -Office $Null
                             }
                             Manager {
-                                Set-ADUser -Identity $($UserName) -Manager $Null  
+                                Set-ADUser -Identity $UserName -Manager $Null  
                             }
                             ProfilePath {
-                                Set-ADUser -Identity $($UserName) -ProfilePath $null
+                                Set-ADUser -Identity $UserName -ProfilePath $null
                             }
                             ScriptPath {
-                                Set-ADUser -Identity $($UserName) -ScriptPath $null
+                                Set-ADUser -Identity $UserName -ScriptPath $null
                             }
                             HomeDirectory {
-                                Set-ADUser -Identity $($UserName) -HomeDirectory $null
+                                Set-ADUser -Identity $UserName -HomeDirectory $null
                             }
                             HomeDrive {
-                                Set-ADUser -Identity $($UserName) -HomeDrive $Null
+                                Set-ADUser -Identity $UserName -HomeDrive $Null
                             }
                         }
                         Show-UDToast -Message "$($ParamToChange) has now been cleared for $($UserName)" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
@@ -959,7 +1044,7 @@ Function Edit-UserUPN {
                 $UPN = Get-adforest | select-Object UPNSuffixes -ExpandProperty UPNSuffixes
                 $ForestName = Get-adforest | select-Object name -ExpandProperty name
                 $Combined = @($UPN, $ForestName)
-                New-UDGrid -Spacing '1' -Container -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
                     New-UDSelect -id 'UPN' -FullWidth -Option {
                         New-UDSelectOption -Name $CurrentValue -Value 1
                         foreach ($NewUPNs in $Combined) {
@@ -1026,21 +1111,21 @@ Function New-ADUserFranky {
                 $UPN = Get-adforest | select-Object UPNSuffixes -ExpandProperty UPNSuffixes
                 $ForestName = Get-adforest | select-Object name -ExpandProperty name
                 $Combined = @($UPN, $ForestName)
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 5 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGivenName' -Label 'Givenname' -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtSurname' -Label 'Surname' -FullWidth
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTextbox -Id 'txtDisplayName' -Label 'Display name (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTextbox -Id 'txtUPN' -Label 'UPN (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDSelect -id 'UPN' -FullWidth -Option {
                             New-UDSelectOption -Name "Select Prefix..." -Value 1
                             foreach ($UPNs in $Combined) {
@@ -1050,13 +1135,13 @@ Function New-ADUserFranky {
                             }
                         }
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTextbox -Id 'txtSamAccountName' -Label 'SamAccountName (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 6 -Content { }
-                    New-UDGrid -Item -Size 12 -Content {
-                        New-UDHTML -Markup "</br>"
-                        New-UDHTML -Markup "Enter the desired password, the password must be at least 10 characters.</br>"
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDHTML -Markup "<br>"
+                        New-UDHTML -Markup "Enter the desired password, the password must be at least 10 characters.<br>"
                         New-UDDynamic -Id 'generatepassword' -content {
                             $RndPwd = New-RndPassword
                             New-UDTypography -Text "$($RndPwd)" -Style @{ 'font-weight' = '700' }
@@ -1080,21 +1165,21 @@ Function New-ADUserFranky {
                                 Sync-UDElement -Id 'generatepassword'
                             }
                         }
-                        New-UDHTML -Markup "</br>"
+                        New-UDHTML -Markup "<br>"
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTextbox -Id 'txtPW1' -Label 'Password (Required)' -Type password -FullWidth
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTextbox -Id 'txtPW2' -Label 'Verify password (Required)' -Type password -FullWidth
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDCheckBox -Id 'MustChangePW' -LabelPlacement end -Label 'User must change password at next logon'
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDCheckBox -Id 'CannotChangePW' -LabelPlacement end -Label 'User cannot change password'
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDCheckBox -Id 'AccountDisabled' -Checked $true -LabelPlacement end -Label 'Uncheck to disable account'
                     }
                 }

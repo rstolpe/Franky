@@ -59,4 +59,5 @@ function New-RndPassword {
     $outputString = -join $scrambledStringArray
     return $outputString 
 }
+
 Export-ModuleMember -Function "ConvertTo-ByteString", "New-RndPassword"

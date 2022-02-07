@@ -27,8 +27,8 @@ function Get-UserReports {
     )
 
     Show-UDModal -Header { "Generate user reports" } -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 3 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                 New-UDSelect -id 'SelectUserReportType' -FullWidth -Option {
                     New-UDSelectOption -Name 'Select report...' -Value 1
                     New-UDSelectOption -Name 'Disabled accounts' -Value "disabled"
@@ -37,7 +37,7 @@ function Get-UserReports {
                     New-UDSelectOption -Name 'Expired user accounts' -Value "accountexpired"
                 }
             }
-            New-UDGrid -Item -Size 2 -Content {
+            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                 New-UDButton -Text "Generate" -size small -Onclick {
                     $SelectUserReportType = Get-UDElement -Id 'SelectUserReportType'
 
@@ -50,7 +50,7 @@ function Get-UserReports {
                     }
                 }
             }
-            New-UDGrid -Item -Size 7 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
             New-UDDynamic -Id 'UserReport' -content {
                 $SelectUserReportType = Get-UDElement -Id 'SelectUserReportType'
                     
@@ -103,7 +103,7 @@ function Get-UserReports {
                     }
                 )
                 if ($Null -ne $AccountReport) {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "Report$($SelectUserReportType.value)Users" -EventID 10 -EntryType Information -Message "$($User) has generated a report over $($SelectUserReportType.value) users`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
@@ -111,7 +111,7 @@ function Get-UserReports {
                     }
                 }
                 else {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -LargeSize 12 -ExtraSmallSize 12 -Content {
                         New-UDAlert -Severity 'info' -Text "Could not generate a report, it's likley because you don't have anything to report"
                     }
                 }
@@ -140,14 +140,14 @@ function Get-ComputerReport {
     )
 
     Show-UDModal -Header { "Generate computer reports" } -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 3 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                 New-UDSelect -id 'SelectComputerReportType' -FullWidth -Option {
                     New-UDSelectOption -Name 'Select report...' -Value 1
                     New-UDSelectOption -Name 'Disabled computers' -Value "disabled"
                 }
             }
-            New-UDGrid -Item -Size 2 -Content {
+            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                 New-UDButton -Text "Generate" -size small -Onclick {
                     $SelectComputerReportType = Get-UDElement -Id 'SelectComputerReportType'
 
@@ -160,7 +160,7 @@ function Get-ComputerReport {
                     }
                 }
             }
-            New-UDGrid -Item -Size 7 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
             New-UDDynamic -Id 'ComputerReport' -content {
                 $SelectComputerReportType = Get-UDElement -Id 'SelectComputerReportType'
                     
@@ -185,12 +185,12 @@ function Get-ComputerReport {
                     if ($ActiveEventLog -eq "True") {
                         Write-EventLog -LogName $EventLogName -Source "Report$($SelectComputerReportType.value)Computer" -EventID 10 -EntryType Information -Message "$($User) has generated a report over $($SelectComputerReportType.value) computers`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTable -Id 'ComputerReportTable' -Data $ComputerReport -Columns $Columns -DefaultSortDirection “Ascending” -Export -ExportOption "xlsx, PDF, CSV" -ShowSearch -ShowPagination -Dense -Sort -PageSize 20 -PageSizeOptions @(30, 40, 50, 60)
                     }
                 }
                 else {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDAlert -Severity 'info' -Text "Could not generate a report, it's likley because you don't have anything to report"
                     }
                 }
@@ -219,14 +219,14 @@ function Get-ReportGroups {
     )
 
     Show-UDModal -Header { "Generate group reports" } -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
-            New-UDGrid -Item -Size 3 -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
+            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                 New-UDSelect -id 'SelectGroupReportType' -FullWidth -Option {
                     New-UDSelectOption -Name 'Select report...' -Value 1
                     New-UDSelectOption -Name 'Empty groups' -Value "Empty"
                 }
             }
-            New-UDGrid -Item -Size 2 -Content {
+            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                 New-UDButton -Text "Generate" -size small -Onclick {
                     $SelectGroupReportType = Get-UDElement -Id 'SelectGroupReportType'
 
@@ -239,7 +239,7 @@ function Get-ReportGroups {
                     }
                 }
             }
-            New-UDGrid -Item -Size 7 -Content { }
+            New-UDGrid -Item -ExtraLargeSize 7 -LargeSize 7 -MediumSize 7 -SmallSize 7 -Children { }
             New-UDDynamic -Id 'GroupReport' -content {
                 $SelectGroupReportType = Get-UDElement -Id 'SelectGroupReportType'
 
@@ -269,12 +269,12 @@ function Get-ReportGroups {
                     if ($ActiveEventLog -eq "True") {
                         Write-EventLog -LogName $EventLogName -Source "Report$($SelectGroupReportType.value)Groups" -EventID 10 -EntryType Information -Message "$($User) has generated a report over $($SelectGroupReportType.value) groups`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                     }
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTable -Id 'GroupReportTable' -Data $GroupReport -Columns $Columns -DefaultSortDirection “Ascending” -Export -ExportOption "xlsx, PDF, CSV" -ShowSearch -ShowPagination -Dense -Sort -PageSize 20 -PageSizeOptions @(30, 40, 50, 60)
                     }
                 }
                 else {
-                    New-UDGrid -Item -Size 12 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDAlert -Severity 'info' -Text "Could not generate a report, it's likley because you don't have anything to report"
                     }
                 }

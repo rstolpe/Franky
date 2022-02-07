@@ -32,32 +32,32 @@ Function New-ADGrp {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon plus) -size large -Onclick {
             Show-UDModal -Header { "Create new group" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 5 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpCN' -Label 'Enter group name (CN/Name) (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpDisplayName' -Label 'Enter Display Name for the group' -FullWidth
                     }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpsAmAccountName' -Label 'Enter sAmAccountName for the group (Required)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpDescription' -Label 'Enter description' -FullWidth
                     }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpInfo' -Label 'Enter Info' -FullWidth
                     }
-                    New-UDGrid -Item -Size 2 -Content { }
-                    New-UDGrid -Item -Size 5 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
+                    New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                         New-UDTextbox -Id 'txtGrpOwner' -Label 'Enter manage by (AD-User)' -FullWidth
                     }
-                    New-UDGrid -Item -Size 12 -Content {
-                        New-UDHtml -Markup "</br>"
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDHtml -Markup "<br>"
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTypography -Text "Select Group Scope (Required)"
                         New-UDRadioGroup -id "radioScope" -Label "Group Scope" -Content {
                             New-UDRadio -Label "Domain Local" -Value 'DomainLocal'
@@ -65,7 +65,7 @@ Function New-ADGrp {
                             New-UDRadio -Label Universal -Value 'Universal'
                         } -value 'Global'
                     }
-                    New-UDGrid -Item -Size 6 -Content {
+                    New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                         New-UDTypography -Text "Select Group Category (Required)"
                         New-UDRadioGroup -id "radioCategory" -Label "Group Category" -Content {
                             New-UDRadio -Label Security -Value 'Security'
@@ -234,8 +234,8 @@ function Edit-GroupInfoBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon pencil_square) -size small -Onclick { 
             Show-UDModal -Header { "Change info for $($GroupName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDTextbox -Id "txtChangeinfo" -Label "Enter Info" -Value $CurrentValue -FullWidth
                     }
                 }
@@ -296,8 +296,8 @@ function Set-GroupScopeBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon pencil_square) -size small -Onclick { 
             Show-UDModal -Header { "Change group scope for $($GroupName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDRadioGroup -id "radioScope" -Label "Group Scope" -Content {
                             New-UDRadio -Label Global -Value 'Global'
                             New-UDRadio -Label Universal -Value 'Universal'
@@ -346,8 +346,8 @@ function Set-GroupCategoryBtn {
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon pencil_square) -size small -Onclick { 
             Show-UDModal -Header { "Change group category for $($GroupName)" } -Content {
-                New-UDGrid -Spacing '1' -Container -Content {
-                    New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         New-UDRadioGroup -id "radioCategory" -Label "Group Category" -Content {
                             New-UDRadio -Label Security -Value 'Security'
                             New-UDRadio -Label Distribution -Value 'Distribution'
@@ -399,7 +399,7 @@ Function Show-ADGroupMemberOf {
                     Write-EventLog -LogName $EventLogName -Source "ShowMemberOf" -EventID 10 -EntryType Information -Message "$($User) did look at memberof for $($ObjectName)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                 }
                 New-UDDynamic -Id 'MemberOf' -content {
-                    New-UDGrid -Spacing '1' -Container -Content {
+                    New-UDGrid -Spacing '1' -Container -Children {
                         $Columns = @(
                             New-UDTableColumn -Title 'Name' -Property 'Name' -IncludeInExport -IncludeInSearch -DefaultSortColumn
                             New-UDTableColumn -Title 'SamAccountName' -Property 'SamAccountName' -IncludeInExport -IncludeInSearch
@@ -410,18 +410,18 @@ Function Show-ADGroupMemberOf {
                         $DisplayData = Get-ADPrincipalGroupMembership -Identity $ObjectName | Get-ADGroup -properties info, name, SamAccountName, Description  | Select-Object @("Name", "Samaccountname", "Description", "info")
 
                         if ([string]::IsNullOrEmpty($DisplayData)) {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'info' -Text "$($ObjectName) are not member of any group!"
                             }
                         }
                         else {
-                            New-UDGrid -Item -Size 12 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
                                 New-UDTable -id 'MemberOfTable' -Columns $Columns -Data $DisplayData -DefaultSortDirection "Ascending" -Sort -ShowSelection -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
                         }
                         if ($null -ne $DisplayData) {
-                            New-UDGrid -Item -Size 2 -Content {
+                            New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 New-UDTooltip -TooltipContent {
                                     New-UDTypography -Text "Delete from selected groups"
                                 } -content { 
@@ -450,15 +450,15 @@ Function Show-ADGroupMemberOf {
                                     }
                                 }
                             }
-                            New-UDGrid -Item -Size 3 -Content { }
+                            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children { }
                         }
                         else {
-                            New-UDGrid -Item -Size 5 -Content { }
+                            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { }
                         }
-                        New-UDGrid -Item -Size 5 -Content {
+                        New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children {
                             New-UDTextbox -Id "txtAddTo" -Label "Enter the group you want to join" -FullWidth
                         }
-                        New-UDGrid -Item -Size 2 -Content { 
+                        New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { 
                             New-UDTooltip -TooltipContent {
                                 New-UDTypography -Text "Join group"
                             } -content { 
@@ -525,9 +525,9 @@ function Show-WhosMemberInGroup {
         if ($ActiveEventLog -eq "True") {
             Write-EventLog -LogName $EventLogName -Source "GroupSearch" -EventID 10 -EntryType Information -Message "$($User) did search for group $($GroupName)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
         }
-        New-UDGrid -Spacing '1' -Container -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
             New-UDDynamic -Id 'CheckGroup' -content {
-                New-UDGrid -Item -Size 12 -Content {
+                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                     $SearchGroupUser = Get-ADGroupMember -Identity $GroupName 
                     $SearchGroupUserData = $SearchGroupUser | Foreach-Object {
                         if ($_.objectClass -eq 'user') {
@@ -578,12 +578,12 @@ function Show-WhosMemberInGroup {
                         New-UDTableColumn -Property Info -Title "Info" -IncludeInExport -IncludeInSearch
                     )
                     if ([string]::IsNullOrEmpty($SearchGroupUserData)) {
-                        New-UDGrid -Item -Size 12 -Content {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                             New-UDAlert -Severity 'info' -Text "$($GroupName) don't have any members!"
                         }
                     }
                     else {
-                        New-UDGrid -Item -Size 12 -Content {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                             $SearchMemberOption = New-UDTableTextOption -Search "Search after member"
                             New-UDTable -Id 'GroupSearchTable' -Data $SearchGroupUserData -Columns $SearchGroupUserColumns -DefaultSortDirection "Ascending" -TextOption $SearchMemberOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50)
                         }
@@ -614,10 +614,10 @@ Function Add-ToGroupExcel {
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
     )
     Show-UDModal -Header { "Add to group from excel file" } -Content {
-        New-UDGrid -Spacing '1' -Container -Content {
+        New-UDGrid -Spacing '1' -Container -Children {
             New-UDDynamic -Id 'FileImport' -content {
-                New-UDGrid -Item -Size 4 -Content { }
-                New-UDGrid -Item -Size 6 -Content {
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
+                New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                     New-UDUpload -Id "UploadBtn" -Text 'Select file to run' -OnUpload {
                         $Data = $Body | ConvertFrom-Json
                         $bytes = [System.Convert]::FromBase64String($Data.Data)
@@ -627,13 +627,13 @@ Function Add-ToGroupExcel {
                     }
                     New-UDHtml -Markup "<b>Uploaded file:</b> $($Session:FileName)"
                 }
-                New-UDGrid -Item -Size 2 -Content { }
+                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
             }
-            New-UDGrid -Item -Size 12 -Content {
-                New-UDHTML -Markup "<b>Error report</b></b>"
+            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                New-UDHTML -Markup "<b>Error report</b>"
                 New-UDTypography -Text "If you click in the editor and then press ctrl+f you can search, to download the report click on the Download log button."
             }
-            New-UDGrid -Item -Size 12 -Content {
+            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                 New-UDCodeEditor -Id 'Report' -ReadOnly -Height 450
             }
         }
