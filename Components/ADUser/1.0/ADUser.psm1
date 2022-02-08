@@ -316,7 +316,7 @@ Function Compare-ADUserGroupsBtn {
                                         else {
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                                New-UDTable -id "CompTable" -Titel "$($UserName) is not a member of the following groups" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
+                                                New-UDTable -id "CompTable" -Title "$($UserName) is not a member of the following groups" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
                                             }
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 New-UDButton -Text "Add to selected" -OnClick {
