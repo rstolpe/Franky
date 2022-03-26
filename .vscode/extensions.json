@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "github.vscode-pull-request-github",
+        "bierner.markdown-preview-github-styles",
+        "ms-vscode.powershell",
+        "streetsidesoftware.code-spell-checker"
+    ]
+}
