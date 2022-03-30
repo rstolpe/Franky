@@ -19,10 +19,8 @@
 function Edit-DescriptionBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ChangeDescriptionObject,
         [Parameter(Mandatory)][string]$ChangeObjectName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$User,
@@ -104,10 +102,8 @@ function Edit-DescriptionBtn {
 function Edit-MailBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ChangeMailObject,
         [Parameter(Mandatory)][string]$ChangeObjectName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$User,
@@ -190,9 +186,7 @@ function Edit-MailBtn {
 function Move-ADObjectBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectToMove,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$UserName,
@@ -235,12 +229,10 @@ function Move-ADObjectBtn {
 function Rename-ADObjectBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectToRename,
         [Parameter(Mandatory)][string]$WhatToChange,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory = $false)][string]$BoxToSync,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$User,
@@ -337,12 +329,10 @@ function Rename-ADObjectBtn {
 function Set-EnableDisableADAccountBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectToChange,
         [Parameter(Mandatory)][string]$ObjectStatus,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory = $false)][string]$CurrentDescription,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -441,11 +431,9 @@ function Set-EnableDisableADAccountBtn {
 function Edit-ManagedByBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -527,10 +515,8 @@ function Edit-ManagedByBtn {
 function Remove-ADObjectBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -615,11 +601,9 @@ function Get-ADLastSeen {
 function Edit-PrimaryGroup {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,

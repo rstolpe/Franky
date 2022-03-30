@@ -19,10 +19,8 @@
 function Unlock-ADUserAccountBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$AccountStatus,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -77,9 +75,7 @@ function Unlock-ADUserAccountBtn {
 function New-PasswordADUserBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -187,9 +183,7 @@ function New-PasswordADUserBtn {
 function New-ADAccountExpirationDateBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -239,10 +233,8 @@ function New-ADAccountExpirationDateBtn {
 Function Compare-ADUserGroupsBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][String]$UserName,
         [Parameter(Mandatory)][String]$YourFullDomain,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -395,9 +387,7 @@ Function Compare-ADUserGroupsBtn {
 function Add-MultiUsers {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$AddToGroup,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -471,9 +461,7 @@ Function Set-UserPasswordExpiresBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ExpireStatus,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -538,9 +526,7 @@ Function Set-UserChangePasswordBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$PWChangeStatus,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -599,9 +585,7 @@ Function Set-UserChangePasswordNextLogin {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$PWChangeStatus,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -659,9 +643,7 @@ Function Set-UserChangePasswordNextLogin {
 function Show-WhatUserManage {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -811,11 +793,9 @@ function Show-WhatUserManage {
 function Edit-ADUserInfo {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$ParamToChange,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -1027,11 +1007,9 @@ function Edit-ADUserInfo {
 Function Edit-UserUPN {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -1095,8 +1073,6 @@ Function Edit-UserUPN {
 Function New-ADUserFranky {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$BoxToSync,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,

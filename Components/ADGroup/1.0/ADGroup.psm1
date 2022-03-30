@@ -19,8 +19,6 @@
 Function New-ADGrp {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$BoxToSync,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
@@ -157,9 +155,7 @@ Function New-ADGrp {
 function Add-MultiGroupBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjToAdd,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
@@ -221,9 +217,7 @@ function Add-MultiGroupBtn {
 function Edit-GroupInfoBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$GroupName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -283,10 +277,8 @@ function Edit-GroupInfoBtn {
 function Set-GroupScopeBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$GroupName,
         [Parameter(Mandatory = $false)][string]$CurrentGroupScope,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -332,10 +324,8 @@ function Set-GroupScopeBtn {
 function Set-GroupCategoryBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$GroupName,
         [Parameter(Mandatory = $false)][string]$CurrentGroupCategory,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -382,9 +372,7 @@ function Set-GroupCategoryBtn {
 Function Show-ADGroupMemberOf {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$ObjectName,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -516,9 +504,7 @@ function Show-WhosMemberInGroup {
         [Parameter(Mandatory)][string]$GroupName,
         [Parameter(Mandatory)][string]$User,
         [Parameter(Mandatory)][string]$LocalIpAddress,
-        [Parameter(Mandatory)][string]$RemoteIpAddress,
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName
+        [Parameter(Mandatory)][string]$RemoteIpAddress
     )
 
     Show-UDModal -Header { "Show members in $($GroupName)" } -Content {
@@ -606,9 +592,7 @@ function Show-WhosMemberInGroup {
 Function Add-ToGroupExcel {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -658,24 +642,32 @@ Function Add-ToGroupExcel {
                         disabled = $true 
                     }
                 }
-
-                $ErrorReport = @("Please wait, this can take a while!")
+                $ErrorReport = New-Object System.Collections.Generic.List[System.Object]
+                $ErrorReport.Add("Please wait, this can take a while!")
                 foreach ($getinfo in $ExcelFile) {
                     if ($Null -ne $getinfo.group) {
                         if ($Null -ne $getinfo.objectname) {
                             try {
-                                Add-ADGroupMember -Identity $getinfo.group.trim() -members $getinfo.objectname.trim()
-                                if ($ActiveEventLog -eq "True") {
-                                    Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($getinfo.objectname) to $($getinfo.group)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                if ((Get-ADObject -filter "samaccountname -like '$($getinfo.objectname)'" -Properties memberof).memberof -match "CN=$($getinfo.group),*") {
+                                    $ErrorReport.Add("$($getinfo.objectname) is already a member of $($getinfo.group)! Skipping!")
+                                }
+                                else {
+                                    Add-ADGroupMember -Identity $getinfo.group.trim() -members $getinfo.objectname.trim()
+                                    if ($ActiveEventLog -eq "True") {
+                                        Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($getinfo.objectname) to $($getinfo.group)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                    }
                                 }
                             }
                             catch {
-                                $ErrorReport += "Could not add $($getinfo.objectname) to $($getinfo.group)"
+                                $ErrorReport.Add("Could not add $($getinfo.objectname) to $($getinfo.group)")
                             }
+                        }
+                        else {
+                            $ErrorReport.Add("Could not add a object to $($getinfo.group) as the object was missing in the file!")
                         }
                     }
                     else {
-                        $ErrorReport += "Skipped user $($getinfo.objectname) as group was missing in the file!"
+                        $ErrorReport.Add("Skipped object $($getinfo.objectname) as group was missing in the file!")
                     }
                     $JobOutput = $ErrorReport -join ([Environment]::NewLine)
                     Set-UDElement -Id 'Report' -Properties @{
@@ -694,14 +686,22 @@ Function Add-ToGroupExcel {
                 }
             }
         } -Id "ExecuteBtn"
-        New-UDButton -Text 'Download template' -size medium -OnClick {
-            Invoke-UDRedirect "https://$($TargetDomain)/templates/group_template.xlsx"
-        } -Id "templatebtn"
-        New-UDButton -Text 'Download Log' -OnClick {
-            $code = (Get-UDElement -Id 'Report').code
-            Start-UDDownload -StringData $code -FileName "Report_BulkAddUsrToGroup_$(Get-Date).log"
-        } -id 'LogBtn'
-        New-UDButton -Text "Close" -OnClick {
+        New-UDTooltip -TooltipContent {
+            New-UDTypography -Text "Download excel template"
+        } -content { 
+            New-UDButton -Icon (New-UDIcon -Icon FileDownload) -OnClick {
+                Invoke-UDRedirect "https://$($TargetDomain)/templates/group_template.xlsx"
+            } -Id "templatebtn"
+        }
+        New-UDTooltip -TooltipContent {
+            New-UDTypography -Text "Download log file"
+        } -content { 
+            New-UDButton -Icon (New-UDIcon -Icon download) -OnClick {
+                $code = (Get-UDElement -Id 'Report').code
+                Start-UDDownload -StringData $code -FileName "Report_BulkAddUsrToGroup_$(Get-Date).log"
+            } -id 'LogBtn'
+        }
+        New-UDButton -Icon (New-UDIcon -Icon WindowClose) -OnClick {
             Hide-UDModal
         } -id "CloseBtn"
     } -FullWidth -MaxWidth 'md' -Persistent

@@ -39,7 +39,6 @@ function New-RefreshUDElementBtn {
 function New-MultiSearch {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][String]$txtBoxMultiSearch,
         [Parameter(Mandatory)][String]$MultiSearchObj,
         [Parameter(Mandatory)][String]$ElementSync,

@@ -31,13 +31,13 @@ New-UDGrid -Spacing '1' -Container -Children {
                         Sync-UDElement -Id 'ComputerSearchStart'
                     }
                     elseif ($ComputerName.EndsWith('*')) {
-                        New-MultiSearch -ActiveEventLog $ActiveEventLog -SearchFor $ComputerName -txtBoxMultiSearch "txtComputerNameStart" -MultiSearchObj "Computer" -ElementSync 'ComputerSearchStart'
+                        New-MultiSearch  -SearchFor $ComputerName -txtBoxMultiSearch "txtComputerNameStart" -MultiSearchObj "Computer" -ElementSync 'ComputerSearchStart'
                     }
                     else {
                         Sync-UDElement -Id 'ComputerSearchStart'
                     }
                 }
-                New-ADComputerFranky -BoxToSync "txtComputerNameStart" -RefreshOnClose "ComputerSearchStart" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                New-ADComputerFranky -BoxToSync "txtComputerNameStart" -RefreshOnClose "ComputerSearchStart"  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
             }
             New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 2 -Children { }
         }
@@ -104,21 +104,19 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                                 $SearchADComputer = Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'"  -Properties CN, DisplayName, DNSHostName, OperatingSystem, Description, CanonicalName, DistinguishedName, Created, SamAccountName, OperatingSystemVersion, whenChanged, SID, IPv4Address, IPv6Address, PrimaryGroup, ManagedBy, Location, Enabled, LastLogonDate
                                 New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                                    Restart-ADComputer -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Ping-ADComputer -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-MonitorInfoBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Compare-ComputerGrpsBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ComputerName -YourFullDomain $YourFullDomain -RefreshOnClose "ComputerSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-ProcessTableBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-ServicesTableBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-NetAdpBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-SchedualTaskTableBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-InstalledDriversBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-AutostartTableBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-InstalledSoftwareBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Remove-ADObjectBtn -RefreshOnClose "ComputerSearchStart" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -ObjectType "Computer" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    if (-Not([string]::IsNullOrEmpty($AppToken))) {
-                                        Remove-TempFilesClientBtn -CurrentHost $CurrentHost -AppToken $AppToken -RefreshOnClose "ComputerSearch" -Computer $ConvertToComputerName -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    }
+                                    Restart-ADComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Ping-ADComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-MonitorInfoBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Compare-ComputerGrpsBtn  -Computer $ComputerName -YourFullDomain $YourFullDomain -RefreshOnClose "ComputerSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-ProcessTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-ServicesTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-NetAdpBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-SchedualTaskTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-InstalledDriversBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-AutostartTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-InstalledSoftwareBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Remove-ADObjectBtn -RefreshOnClose "ComputerSearchStart"  -ObjectType "Computer" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Remove-TempFilesClientBtn -CurrentHost $CurrentHost -RefreshOnClose "ComputerSearch" -Computer $ConvertToComputerName  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     New-RefreshUDElementBtn -RefreshUDElement 'ComputerSearch'
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
@@ -141,16 +139,16 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             else {
                                                 switch ($UserImpactMenu.Value) {
                                                     2 {
-                                                        Disconnect-UserFromComputer -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Disconnect-UserFromComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                                     }
                                                     3 {
-                                                        Remove-UserProfilesBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -YourDomain $YourDomain.ToUpper() -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-UserProfilesBtn  -Computer $ConvertToComputerName -YourDomain $YourDomain.ToUpper() -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                                     }
                                                     4 {
-                                                        Remove-EdgeSettings -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-EdgeSettings  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                                     }
                                                     5 {
-                                                        Remove-ChromeSettings  -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-ChromeSettings   -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                                     }
                                                 }
                                             }
@@ -170,7 +168,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Enabled)"
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                    Set-EnableDisableADAccountBtn -CurrentDescription $SearchADComputer.Description -ObjectStatus $SearchADComputer.Enabled -ObjectToChange "Computer" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearch" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Set-EnableDisableADAccountBtn -CurrentDescription $SearchADComputer.Description -ObjectStatus $SearchADComputer.Enabled -ObjectToChange "Computer"  -RefreshOnClose "ComputerSearch" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Display name"
@@ -179,7 +177,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTypography -Text "$($SearchADComputer.DisplayName)"
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "DisplayName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.DisplayName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "DisplayName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.DisplayName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "CN name"
@@ -188,7 +186,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTypography -Text "$($SearchADComputer.CN)"
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "CN" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.CN -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "CN"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.CN -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SamAccountName"
@@ -197,7 +195,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTypography -Text "$($SearchADComputer.SamAccountName)"
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart" -EventLogName $EventLogName -WhatToChange "SamAccountName" -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.SamAccountName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "SamAccountName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.SamAccountName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Description"
@@ -206,7 +204,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTypography -Text "$($SearchADComputer.Description)"
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { 
-                                    Edit-DescriptionBtn -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -RefreshOnClose "ComputerSearch" -CurrentValue $SearchADComputer.Description -ChangeDescriptionObject 'Computer' -ChangeObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Edit-DescriptionBtn  -RefreshOnClose "ComputerSearch" -CurrentValue $SearchADComputer.Description -ChangeDescriptionObject 'Computer' -ChangeObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "SID"
@@ -241,7 +239,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     $ConvertPrimaryGroup = $(try { $SearchADComputer.PrimaryGroup | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                    Edit-PrimaryGroup -ObjectType "Computer" -ObjectName $ComputerName -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "ComputerSearch" -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Edit-PrimaryGroup -ObjectType "Computer" -ObjectName $ComputerName -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "ComputerSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Managed By"
@@ -254,7 +252,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                     $ComputerManagedBy = $(try { $SearchADComputer.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                    Edit-ManagedByBtn -CurrentValue $ComputerManagedBy -ObjectType "Computer" -ObjectName $ComputerName -RefreshOnClose "ComputerSearch" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Edit-ManagedByBtn -CurrentValue $ComputerManagedBy -ObjectType "Computer" -ObjectName $ComputerName -RefreshOnClose "ComputerSearch"  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                     New-UDTypography -Text "Object was created"
@@ -597,7 +595,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             }
                                         }
                                     }
-                                    Add-MultiGroupBtn -RefreshOnClose "ComputerSearchGroupList" -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -ObjToAdd "$($ComputerName)$" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Add-MultiGroupBtn -RefreshOnClose "ComputerSearchGroupList"  -ObjToAdd "$($ComputerName)$" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 }
                             } -LoadingComponent {
                                 New-UDProgress -Circular

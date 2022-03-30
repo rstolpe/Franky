@@ -16,10 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
-# LOGG SETTINGS!
-# If you want log actions in eventlog then change this to $True, and remember to run the "InstallLog.ps1" script before.
-[bool]$ActiveEventLog = $true
-
 <# OPTIONAL SETTINGS
 Here you have two options, either activate Load Balancing or if you only have one PowerShell Universal server you should just
 leave it at the default $false. If you don't activate Load Balancing or fill out an AppToken for singel PSU server some functions

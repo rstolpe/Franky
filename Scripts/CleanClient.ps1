@@ -20,9 +20,7 @@ Param(
     [Parameter(Mandatory)][string]$CleanComputer,
     [Parameter(Mandatory = $false)][string]$User,
     [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
-    [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-    [Parameter(Mandatory)][bool]$ActiveEventLog,
-    [Parameter(Mandatory = $false)][string]$EventLogName
+    [Parameter(Mandatory = $false)][string]$LocalIpAddress
 )
 
 

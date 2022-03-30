@@ -55,7 +55,7 @@ Write-Output "Creating new certification..."
 New-SelfSignedCertificate -DnsName $DNSDomain, $FQDN -CertStoreLocation "cert:\LocalMachine\My"
 
 Write-output "You need to save the following and follow the instructions!"
-Write-output "If you forgett to save it, it's stored in C:\Temp\ remember to delete the file when your done!"
+Write-output "If you forget to save it, it's stored in C:\Temp\ remember to delete the file when your done!"
 
 Write-Output "Add the following to appsettings.json row 10, replace Franky.com with the following."
 Write-Output "$($DNSDomain)"

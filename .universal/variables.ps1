@@ -18,6 +18,7 @@
 #
 # Variables for logging
 New-PSUVariable -Name "EventLogName" -Value "Franky" -Description "Write the name you want for the EventLog"
+New-PSUVariable -Name "ActiveEventLog" -Value $True -Type "Bool" -Description "Activate logging to EventLog"
 
 # Variables for the dashboard
 New-PSUVariable -Name "DashboardName" -Value "Franky" -Description "The name you want for the dashboard"

@@ -19,8 +19,6 @@
 function Get-UserReports {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -132,8 +130,6 @@ function Get-UserReports {
 function Get-ComputerReport {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -211,8 +207,6 @@ function Get-ComputerReport {
 function Get-ReportGroups {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress

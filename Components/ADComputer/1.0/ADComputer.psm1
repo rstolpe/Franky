@@ -19,9 +19,7 @@
 Function Show-MonitorInfoBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][String]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -97,9 +95,7 @@ Function Show-MonitorInfoBtn {
 function Show-InstalledDriversBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -170,37 +166,30 @@ Function Get-SysInfo {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][String]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
     )
-    try {
-        Invoke-Command -ComputerName $Computer -Scriptblock {
-            [pscustomobject]@{
-                Computer   = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Manufacturer, Model, SystemFamily, UserName
-                OS         = Get-CimInstance -ClassName Win32_OperatingSystem | select-object LastBootUpTime, InstallDate
-                UpTime     = (get-date) - (gcim Win32_OperatingSystem).LastBootUpTime | Select-Object days, hours, minutes
-                BIOS       = Get-CimInstance -ClassName Win32_BIOS | Select-Object BIOSVersion, SerialNumber
-                RAM        = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum / 1gb
-                HDD        = Get-CimInstance -ClassName Win32_LogicalDisk | where-object DeviceID -eq "C:" | Select-Object -Property DeviceID, @{'Name' = 'Total'; Expression = { [int]($_.Size / 1GB) } }, @{'Name' = 'Free'; Expression = { [int]($_.FreeSpace / 1GB) } }
-                NetworkMac = (Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 'True'").MACAddress
-            }
+
+    $CimSession = New-CimSession -ComputerName $Computer
+    if ($null -ne $CimSession) {
+        [pscustomobject]@{
+            Computer   = Get-CimInstance -CimSession $CimSession -ClassName Win32_ComputerSystem | Select-Object Manufacturer, Model, SystemFamily, UserName
+            OS         = Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem | select-object LastBootUpTime, InstallDate
+            UpTime     = (get-date) - (Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem).LastBootUpTime | Select-Object days, hours, minutes
+            BIOS       = Get-CimInstance -CimSession $CimSession -ClassName Win32_BIOS | Select-Object BIOSVersion, SerialNumber
+            RAM        = (Get-CimInstance -CimSession $CimSession -ClassName Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum / 1gb
+            HDD        = Get-CimInstance -CimSession $CimSession -ClassName Win32_LogicalDisk | where-object DeviceID -eq "C:" | Select-Object -Property DeviceID, @{'Name' = 'Total'; Expression = { [int]($_.Size / 1GB) } }, @{'Name' = 'Free'; Expression = { [int]($_.FreeSpace / 1GB) } }
+            NetworkMac = (Get-CimInstance -CimSession $CimSession -ClassName Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 'True'").MACAddress
         }
-    }
-    catch {
-        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-            New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
-        }
+        Remove-CimSession -InstanceId $CimSession.InstanceId
     }
 }
 
 function Show-NetAdpBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -328,9 +317,7 @@ function Show-NetAdpBtn {
 function Show-ProcessTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -411,9 +398,7 @@ function Show-ProcessTableBtn {
 function Show-InstalledSoftwareBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -467,9 +452,7 @@ function Show-InstalledSoftwareBtn {
 function Show-AutostartTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -526,9 +509,7 @@ function Show-AutostartTableBtn {
 function Show-ServicesTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -725,10 +706,8 @@ function Show-ServicesTableBtn {
 function Remove-UserProfilesBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
         [Parameter(Mandatory)][string]$YourDomain,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -919,10 +898,8 @@ function Remove-UserProfilesBtn {
 Function Compare-ComputerGrpsBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][String]$Computer,
         [Parameter(Mandatory)][String]$YourFullDomain,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
@@ -1075,9 +1052,7 @@ Function Compare-ComputerGrpsBtn {
 function Show-SchedualTaskTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -1190,9 +1165,7 @@ function Show-SchedualTaskTableBtn {
 Function Restart-ADComputer {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -1260,10 +1233,7 @@ Function Disconnect-UserFromComputer {
 function Remove-TempFilesClientBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $false)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
-        [Parameter(Mandatory)][string]$AppToken,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
@@ -1297,16 +1267,69 @@ function Remove-TempFilesClientBtn {
                     }
 
                     try {
-                        Connect-PSUServer -ComputerName https://$CurrentHost -AppToken $AppToken
-                        $Job = Invoke-PSUScript -Script 'CleanClient.ps1' -EventLogName $EventLogName -ActiveEventLog $ActiveEventLog -CleanComputer $Computer -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                        while ($Job.Status -ne 'Completed') {
-                            $JobOutput = (Get-PSUJobOutput -Job $Job).Data -join ([Environment]::NewLine)
-                            Set-UDElement -Id 'CleanClientCode' -Properties @{
-                                code = $JobOutput
-                            } 
-                            # Refresh job object
-                            $Job = Get-PSUJob -Id $Job.Id
+                        $CleanReport = New-Object System.Collections.Generic.List[System.Object]
+                        $CleanReport.Add("Please wait, this can take a while...")
+                        Invoke-Command -ComputerName $Computer -Scriptblock { 
+                            $WindowsOld = "C:\Windows.old"
+                            $Users = Get-ChildItem -Path C:\Users
+                            $WSUSCache = "C:\Windows\SoftwareDistribution\Download"
+                            $TempFolders = @("C:\Temp", "C:\Tmp", "C:\Windows\Temp", "C:\Windows\Prefetch")
+
+                            foreach ($tfolder in $TempFolders) {
+                                if (Test-Path -Path $tfolder) {
+                                    $CleanReport.Add("Deleting all files in $tfolder...")
+                                    Remove-Item "$($tfolder)\*" -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+                                }  
+                            }
+
+                            foreach ($usr in $Users) {
+                                $UsrTemp = "C:\Users\$usr\AppData\Local\Temp"
+                                if (Test-Path -Path $UsrTemp) {
+                                    $CleanReport.Add("Deleting all files in $UsrTemp...")
+                                    Remove-Item "$($UsrTemp)\*" -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+                                } 
+                            }
+
+                            $CleanReport.Add("disabeling wuauserv...")
+                            Stop-Service -Name 'wuauserv'
+                            do {
+                                $CleanReport.Add('Waiting for wuauserv to stop...')
+                                Start-Sleep -s 1
+
+                            } while (Get-Process wuauserv -ErrorAction SilentlyContinue)
+    
+                            $CleanReport.Add("Deleting Windows Update Cache...")
+                            Remove-Item "$($WSUSCache)\*" -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+                            $CleanReport.Add("Start wuauserv again...")
+                            Start-Service -Name 'wuauserv'
+
+                            if (Test-Path -Path $WindowsOld) {
+                                $CleanReport.Add("Deleting folder C:\Windows.old...")
+                                Remove-Item "$($WindowsOld)\" -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+                            }
+
+                            if (Test-Path -Path C:\'$Windows.~BT\') {
+                                takeown /F C:\'$Windows.~BT\*' /R /A
+                                icacls C:\'$Windows.~BT\*.*' /T /grant administrators:F
+                                $CleanReport.Add("Deleting folder C:\Windows.~BT\...")
+                                Remove-Item C:\'$Windows.~BT\' -Recurse -Force -Confirm:$False -ErrorAction SilentlyContinue
+                            }
+
+                            if (Test-Path -Path C:\'$Windows.~WS\') {
+                                takeown /F C:\'$Windows.~WS\*' /R /A
+                                icacls C:\'$Windows.~WS\*.*' /T /grant administrators:F
+                                $CleanReport.Add("Deleting folder C:\Windows.~WS\...")
+                                Remove-Item C:\'$Windows.~WS\' -Recurse -Force -Confirm:$False -ErrorAction SilentlyContinue
+                            }
                         }
+                        if ($ActiveEventLog -eq "True") {
+                            Write-EventLog -LogName $EventLogName -Source "TempFileCleaning" -EventID 10 -EntryType Information -Message "$($User) did run the CleanClient script on $($CleanComputer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                        }
+                        $CleanReport.Add("Everything is now done, you can close the window!")
+                        $JobOutput = $CleanReport -join ([Environment]::NewLine)
+                        Set-UDElement -Id 'CleanClientCode' -Properties @{
+                            code = $JobOutput
+                        } 
                         Set-UDElement -Id 'CloseBtn' -Properties @{
                             disabled = $false 
                             text     = "Close"
@@ -1318,7 +1341,7 @@ function Remove-TempFilesClientBtn {
                         }
                         Set-UDElement -Id 'LogBtn' -Properties @{
                             disabled = $false 
-                            text     = "LogBtn"
+                            text     = "Download Log"
                         }
                         Sync-UDElement -Id $RefreshOnClose
                     }
@@ -1336,7 +1359,7 @@ function Remove-TempFilesClientBtn {
                         }
                         Set-UDElement -Id 'LogBtn' -Properties @{
                             disabled = $false 
-                            text     = "LogBtn"
+                            text     = "Download Log"
                         }
                         Break
                     }
@@ -1359,9 +1382,7 @@ function Remove-TempFilesClientBtn {
 Function Ping-ADComputer {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $false)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress
@@ -1465,9 +1486,7 @@ Function Ping-ADComputer {
 Function Remove-EdgeSettings {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -1575,9 +1594,7 @@ Function Remove-EdgeSettings {
 Function Remove-ChromeSettings {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$User,
         [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory = $false)][string]$RemoteIpAddress
@@ -1683,8 +1700,6 @@ Function Remove-ChromeSettings {
 Function New-ADComputerFranky {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
         [Parameter(Mandatory = $false)][string]$BoxToSync,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
         [Parameter(Mandatory = $false)][string]$User,
