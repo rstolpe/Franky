@@ -1,8 +1,12 @@
 {
     "recommendations": [
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.csharp",
+        "streetsidesoftware.code-spell-checker",
         "github.vscode-pull-request-github",
+        "eamodio.gitlens",
         "bierner.markdown-preview-github-styles",
         "ms-vscode.powershell",
-        "streetsidesoftware.code-spell-checker"
+        "ironmansoftware.powershell-universal"
     ]
 }
