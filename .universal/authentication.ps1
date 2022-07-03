@@ -41,7 +41,7 @@ Set-PSUAuthenticationMethod -ScriptBlock {
         $Result.UserName = ($Credential.UserName)
         $winident = [System.Security.Principal.WindowsIdentity]::new($domain.UserName)
         #Replace xxx below with the ID for your group that can access PSU
-        if ($winident.HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid", 'xxx')) {
+        if ($winident.HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid", "$($FrankyAccessSID)")) {
             $Result.Success = $true
                 
         }

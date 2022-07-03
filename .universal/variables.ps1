@@ -18,7 +18,7 @@
 #
 # Variables for logging
 New-PSUVariable -Name "EventLogName" -Value "Franky" -Description "Write the name you want for the EventLog"
-New-PSUVariable -Name "ActiveEventLog" -Value $True -Type "Bool" -Description "Activate logging to EventLog"
+New-PSUVariable -Name "ActiveEventLog" -Value $True -Description "Activate logging to EventLog"
 
 # Variables for the dashboard
 New-PSUVariable -Name "DashboardName" -Value "Franky" -Description "The name you want for the dashboard"
@@ -26,8 +26,8 @@ New-PSUVariable -Name "NavBarLogo" -Value "/pictures/" -Description "Path to the
 New-PSUVariable -Name "UDScriptRoot" -Value "C:\ProgramData\UniversalAutomation\Repository\Dashboards" -Description "Path to where you save your pages"
 
 # Variables for domain settings
-New-PSUVariable -Name "YourDomain" -Value "localhost" -Description "Your short domain for example FR and NOT the full one like FR.se"
-New-PSUVariable -Name "YourFullDomain" -Value "localhost" -Description "Your full domain for example FR.se NOT only FR"
+New-PSUVariable -Name "YourDomain" -Value "localhost" -Description "Your short domain for example FR and NOT the full one like FR.com"
+New-PSUVariable -Name "YourFullDomain" -Value "localhost" -Description "Your full domain for example FR.com NOT only FR"
 New-PSUVariable -Name "AccessPort" -Value "5000" -Description "Enter the port that you use to access Franky/PSU WebGUI"
 
 # Variables for OU etc.

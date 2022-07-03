@@ -9,14 +9,14 @@ Franky is developed by KeepCodeOpen, KeepCodeOpen is a nonprofit organization.
 [Collection of release notes](https://www.keepcodeopen.com/franky-release-notes/)  
 [Public roadmap](https://www.keepcodeopen.com/franky-public-roadmap/)  
   
-For more information how to use some of our functions visit <https://keepcodeopen.com>  
+For more information how to use some of our functions visit <https://stolpe.io>  
 
 ## Public roadmap
 | Status | Goal | Labels | Date |
 | :---: | :--- | --- | --- |
 | ✅ | [Public beta 1](https://github.com/KeepCodeOpen/Franky/releases/tag/v1.0-Beta1) |`Done`| |
 | ✅ | [Public beta 2](https://github.com/KeepCodeOpen/Franky/releases/tag/v1.0-Beta2) |`Done`|`2022-02-04`|
-| 🚀 | [Public beta 3](https://github.com/KeepCodeOpen/Franky/issues?q=is%3Aopen+is%3Aissue+milestone%3A%22Beta+3%22) |`in progress`|`2022-04-30`|
+| 🚀 | [Public beta 3](https://github.com/KeepCodeOpen/Franky/issues?q=is%3Aopen+is%3Aissue+milestone%3A%22Beta+3%22) |`in progress`|`2022-08-30`|
 | 🚀 | [Integrate AzureAD]() | | |
 | 🚀 | [Integrate Hyper-V]() | | |
 | 🚀 | [Integrate Exchange Online]() | | |
