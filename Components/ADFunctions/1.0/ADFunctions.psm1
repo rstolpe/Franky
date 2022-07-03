@@ -1,6 +1,6 @@
 ﻿<#
     Copyright (C) 2022  KeepCodeOpen - The ultimate IT-Support dashboard
-    <https://keepcodeopen.com>
+    <https://stolpe.io>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

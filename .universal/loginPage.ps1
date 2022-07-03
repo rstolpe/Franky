@@ -1,6 +1,6 @@
 ﻿<#
     Copyright (C) 2022  KeepCodeOpen - The ultimate IT-Support dashboard
-    <https://keepcodeopen.com>
+    <https://stolpe.io>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,4 +16,4 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
-New-PSULoginPage -Image "/pictures/" -Title "Franky v1.0 Beta 2.1" -PrimaryColor "white" -SecondaryColor "white" -SecondaryFontColor "black" -HeaderFontColor "black" -HeaderColor "rgba(0, 151, 207, 0.6)" -Copyright "© 2022 - KeepCodeOpen"
+New-PSULoginPage -Image "/pictures/" -Title "Franky v1.0 Beta 2.2" -PrimaryColor "white" -SecondaryColor "white" -SecondaryFontColor "black" -HeaderFontColor "black" -HeaderColor "rgba(0, 151, 207, 0.6)" -Copyright "© 2022 - KeepCodeOpen"

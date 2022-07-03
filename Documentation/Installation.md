@@ -3,7 +3,7 @@
    
 1. Install PowerShell Universal version 3.0.6 or later
     - https://ironmansoftware.com/downloads
-2. Install PowerShell 7.2.2  
+2. Install PowerShell 7.2.5  
     **Windows**  
     - https://github.com/PowerShell/PowerShell/releases/download/v7.2.2/PowerShell-7.2.2-win-x64.msi  
       

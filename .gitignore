@@ -29,9 +29,3 @@ Thumbs.db
 
 # Settings for PSU.
 licenses.ps1
-
-# Exclude some folders
-Frameworks/
-UniversalDashboard.Charts/
-UniversalDashboard.Map/
-UniversalDashboard.Editor/
