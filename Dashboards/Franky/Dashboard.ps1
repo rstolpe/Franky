@@ -22,6 +22,7 @@ leave it at the default $false. If you don't activate Load Balancing or fill out
 will not work.
 If you activate Load Balancing remember to fill out the hostname the AppTokens for each host in the LoadBalancing component.
 #>
+
 [bool]$ActivateLoadBalancing = $false
 
 if ($ActivateLoadBalancing -eq $true) {
@@ -39,7 +40,63 @@ $CurrentHost = $CheckHost + "." + $YourFullDomain + ":" + $AccessPort
 # Make sure that your connecting to the current host
 $TargetDomain = $CheckHost + "." + $YourFullDomain
 
-$Navigation = @(
+
+$Theme = @{
+    palette   = @{
+        primary = @{
+            main = 'rgba(80, 184, 72, 0.3)'
+        }
+        grey    = @{
+            '300' = 'rgba(0, 151, 207, 0.6)'
+        }
+        action  = @{
+            hover = 'rgba(80, 184, 72, 0.3)'
+        }
+    }
+    overrides = @{
+        MuiSwitch     = @{
+            switchBase = @{
+                '&.Mui-checked + .MuiSwitch-track' = @{
+                    opacity            = '1'
+                    'background-color' = 'rgba(80, 184, 72, 0.6)'
+                }
+            }
+            track      = @{
+                opacity            = '1'
+                'background-color' = 'rgba(0, 151, 207, 0.6)'
+            }
+        }
+        MuiButton     = @{
+            contained = @{
+                'background-color' = 'rgba(0, 151, 207, 0.6)'
+                color              = '#FFFFFF'
+                '&:hover'          = @{
+                    color              = 'rgba(0, 151, 207, 0.6)'
+                    'background-color' = 'rgba(80, 184, 72, 0.3)'
+                }
+            }
+        }
+        MuiIconButton = @{
+            root = @{
+                '&:hover' = @{
+                    'background-color' = 'rgba(80, 184, 72, 0.3)'
+                }
+            }
+        }
+    }
+}
+
+New-UDDashboard -DisableThemeToggle -Title 'Pages' -Theme $Theme -Pages @(
+    New-UDPage -Name 'Active Directory - Users' -Url 'ADUsers' -Logo $NavBarLogo -DefaultHomePage -Content {
+        . "$UDScriptRoot\Franky\Pages\ADUserPage.ps1"  
+    }
+    New-UDPage -Name 'Active Directory - Computers' -Url 'ADComputers' -Logo $NavBarLogo -Content {
+        . "$UDScriptRoot\Franky\\Pages\ADComputerPage.ps1"  
+    }
+    New-UDPage -Name 'Active Directory - Groups' -Url 'ADGroups' -Logo $NavBarLogo -Content {
+        . "$UDScriptRoot\Franky\\Pages\ADGroupPage.ps1"  
+    }
+) -LoadNavigation {
     New-UDListItem -Label 'Users' -Icon (New-UDIcon -Icon user -Size lg) -OnClick { Invoke-UDRedirect '/ADUsers' }
     New-UDListItem -Label 'Computers' -Icon (New-UDIcon -Icon desktop -Size lg) -OnClick { Invoke-UDRedirect '/ADComputers' }
     New-UDListItem -Label 'Groups' -Icon (New-UDIcon -Icon users -Size lg) -OnClick { Invoke-UDRedirect '/ADGroups' }
@@ -59,40 +116,4 @@ $Navigation = @(
             Get-ReportGroups -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
         }
     }
-)
-
-$Pages = @()
-
-$Pages += New-UDPage -Name 'Active Directory - Users' -Url 'ADUsers' -Logo $NavBarLogo -DefaultHomePage -Content {
-
-    . "$UDScriptRoot\Pages\ADUserPage.ps1"  
-
-} -Navigation $Navigation
-
-$Pages += New-UDPage -Name 'Active Directory - Computers' -Url 'ADComputers' -Logo $NavBarLogo -Content {
-
-    . "$UDScriptRoot\Pages\ADComputerPage.ps1"  
-
-} -Navigation $Navigation
-
-$Pages += New-UDPage -Name 'Active Directory - Groups' -Url 'ADGroups' -Logo $NavBarLogo -Content {
-
-    . "$UDScriptRoot\Pages\ADGroupPage.ps1"  
-
-} -Navigation $Navigation
-
-$Theme = @{
-    palette = @{
-        primary = @{
-            main = 'rgba(0, 151, 207, 0.6)'
-        }
-        grey    = @{
-            '300' = 'rgba(0, 151, 207, 0.6)'
-        }
-        action  = @{
-            hover = 'rgba(0, 151, 207, 0.6)'
-        }
-    }
 }
-
-New-UDDashboard -DisableThemeToggle -Title 'Pages' -Theme $Theme -Pages $Pages

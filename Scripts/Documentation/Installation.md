@@ -1,7 +1,7 @@
  # Setup host
  **When your done with your setup restart the powershell universal service**  
    
-1. Install PowerShell Universal version 3.1.0 or later
+1. Install PowerShell Universal version 3.0.6 or later
     - https://ironmansoftware.com/downloads
 2. Install PowerShell 7.2.5  
     **Windows**  
@@ -14,8 +14,8 @@
 5. Make sure that you have the ActiveDirectory module installed, if you have RSAT installed then you already has that module installed also.
     - https://docs.microsoft.com/en-us/powershell/module/activedirectory/?view=windowsserver2022-ps
 6. Copy all of the folders from this repo to C:\ProgramData\UniversalAutomation\Repository\ can download it from
-    - https://github.com/rstolpe/Franky
-    - https://www.stolpe.io/download-franky/
+    - https://github.com/KeepCodeOpen/Franky
+    - https://www.keepcodeopen.com/download-franky/
 7. Run the FirstInstall.ps1 script on the host that you can find in this repo under the folder "Installation Scripts"
 
 # Setup the appsettings.json file

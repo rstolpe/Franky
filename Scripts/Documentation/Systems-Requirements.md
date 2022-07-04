@@ -1,9 +1,9 @@
 # Host
 ## OS
-* Windows Server 2019 and Windows 10 or later
+* Windows Server 2019 or later
 
 ## Softwares
-* PowerShell Universal at least 3.1.0
+* PowerShell Universal at least 3.0.6
 * PowerShell 7.2.5 or later
 
 ## Powershell modules

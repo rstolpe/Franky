@@ -16,6 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
-#If you want to run PS5.1 just remove the # at the line belove and put # infront of the second line.
-# New-PSUEnvironment -Name "Franky" -Version "Franky" -Path "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
-New-PSUEnvironment -Name "Franky" -Version "Franky" -Path "C:\Program Files\PowerShell\7\pwsh.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
+#If you want to run PS5.1 just remove the # at the line below and put # infront of the second line.
+# New-PSUEnvironment -Name "Franky" -Version "5.1" -Path "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
+New-PSUEnvironment -Name "Franky" -Version "7.2.5" -Path "C:\Program Files\PowerShell\7\pwsh.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
