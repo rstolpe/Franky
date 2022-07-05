@@ -5,9 +5,9 @@ Franky is developed by KeepCodeOpen, KeepCodeOpen is a nonprofit organization.
 ### Link collection
 [What's Franky?](https://stolpe.io/whats-franky/)  
 [System Requirements](https://stolpe.io/system-requirements/)  
-[How to install](https://www.keepcodeopen.com/franky-installation-instructions/)  
+[How to install](https://stolpe.io/franky-installation-instructions/)  
 [How to upgrade](https://www.keepcodeopen.com/how-to-upgrade-franky/)  
-[Collection of release notes](https://www.keepcodeopen.com/franky-release-notes/)  
+[Downloads](https://stolpe.io/franky-download/)  
 [Public roadmap](https://stolpe.io/franky-roadmap/)  
   
 For more information how to use some of our functions visit <https://stolpe.io>  

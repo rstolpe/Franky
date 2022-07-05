@@ -1,5 +1,5 @@
 ﻿<#
-    Copyright (C) 2022  KeepCodeOpen - The ultimate IT-Support dashboard
+    Copyright (C) 2022  Stolpe.io - The ultimate IT-Support dashboard
     <https://stolpe.io>
 
     This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>..
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
 New-UDGrid -Spacing '1' -Container -Children {
@@ -105,17 +105,17 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                     Restart-ADComputer -Computer $ConvertToComputerName
                                     Ping-ADComputer  -Computer $ConvertToComputerName
-                                    Show-MonitorInfoBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Compare-ComputerGrpsBtn  -Computer $ComputerName -YourFullDomain $YourFullDomain -RefreshOnClose "ComputerSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-MonitorInfoBtn  -Computer $ConvertToComputerName
+                                    Compare-ComputerGrpsBtn  -Computer $ComputerName -YourFullDomain $YourFullDomain -RefreshOnClose "ComputerSearchGroupList"
                                     Show-ProcessTableBtn  -Computer $ConvertToComputerName
-                                    Show-ServicesTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-ServicesTableBtn  -Computer $ConvertToComputerName
                                     Show-NetAdpBtn  -Computer $ConvertToComputerName
-                                    Show-SchedualTaskTableBtn  -Computer $ConvertToComputerName
+                                    Show-ScheduleTaskTableBtn  -Computer $ConvertToComputerName
                                     Show-InstalledDriversBtn  -Computer $ConvertToComputerName
-                                    Show-AutostartTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-InstalledSoftwareBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Remove-ADObjectBtn -RefreshOnClose "ComputerSearchStart"  -ObjectType "Computer" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Remove-TempFilesClientBtn -CurrentHost $CurrentHost -RefreshOnClose "ComputerSearch" -Computer $ConvertToComputerName  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-AutostartTableBtn  -Computer $ConvertToComputerName
+                                    Show-InstalledSoftwareBtn  -Computer $ConvertToComputerName
+                                    Remove-ADObjectBtn -RefreshOnClose "ComputerSearchStart"  -ObjectType "Computer" -ObjectName $ComputerName
+                                    Remove-TempFilesClientBtn -CurrentHost $CurrentHost -RefreshOnClose "ComputerSearch" -Computer $ConvertToComputerName
                                     New-RefreshUDElementBtn -RefreshUDElement 'ComputerSearch'
                                 }
                                 New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
@@ -509,10 +509,11 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDProgress -Circular
                             }
                             New-UDDynamic -Id 'ComputerSearchGroupList' -content {
-                                $SearchComputerGroup = (Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'"  -Properties memberOf | Select-Object -ExpandProperty memberOf)
+                                $SearchComputerGroup = Get-ADPrincipalGroupMembership -Identity "$($ComputerName)$" -ResourceContextServer $YourFullDomain | Select-Object name -ExpandProperty name
                                 $SearchComputerGroupData = $SearchComputerGroup | Foreach-Object { 
-                                    if ($null -ne ($grpComputer = Get-ADGroup -Filter "DistinguishedName -eq '$($_)'" -Properties samAccountName, info, Description )) {
+                                    if ($null -ne ($grpComputer = Get-ADGroup -Filter "Name -eq '$($_)'" -Properties name, samAccountName, Description, info )) {
                                         [PSCustomObject]@{
+                                            Name2       = $grpComputer.name
                                             Name        = $grpComputer.samAccountName
                                             Description = $grpComputer.Description
                                             Info        = $grpComputer.Info
@@ -521,22 +522,25 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
 
                                 $SearchComputerGroupColumns = @(
-                                    New-UDTableColumn -Property Name -Title "Groupname" -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                                    New-UDTableColumn -Property Name2 -Title "Group name" -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                                    New-UDTableColumn -Property Name -Title "SamAccountName" -IncludeInExport -IncludeInSearch -Hidden
                                     New-UDTableColumn -Property Description -Title "Description" -IncludeInExport -IncludeInSearch
+                                    New-UDTableColumn -Property Info -Title "Info" -IncludeInExport -IncludeInSearch
                                 )
 
                                 if ([string]::IsNullOrEmpty($SearchComputerGroupData)) {
                                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'info' -Text "$($ComputerName) are not a member of any groups"
                                     }
-                                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { }
                                 }
                                 else {
                                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         $SearchComputerOption = New-UDTableTextOption -Search "Search"
                                         New-UDTable -Id 'ComputerSearchTable' -Data $SearchComputerGroupData -Columns $SearchComputerGroupColumns -DefaultSortDirection "Ascending" -TextOption $SearchComputerOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50) -ShowSelection
                                     }
-                                    New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
+                                }
+                                if (-Not([string]::IsNullOrEmpty($SearchComputerGroupData))) {
+                                    New-UDGrid -Item -ExtraLargeSize 8 -LargeSize 6 -MediumSize 6 -SmallSize 2 -Children {
                                         New-UDTooltip -TooltipContent {
                                             New-UDTypography -Text "Remove $($ComputerName) from the selected groups"
                                         } -content { 
@@ -555,7 +559,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                                         Sync-UDElement -Id 'ComputerSearchGroupList'
                                                     }
                                                     catch {
-                                                        Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                         Break
                                                     }
                                                 }
@@ -567,39 +571,65 @@ New-UDGrid -Spacing '1' -Container -Children {
                                         }
                                     }
                                 }
-                                New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 1 -Children { }
-                                New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 5 -Children { 
-                                    New-UDTextbox -Id "txtSearchComputerADD" -Icon (New-UDIcon -Icon 'users') -Label "Enter group name" -FullWidth
+                                else {
+                                    New-UDGrid -Item -ExtraLargeSize 8 -LargeSize 6 -MediumSize 6 -SmallSize 2 -Children { }
                                 }
-                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Children { 
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 3 -MediumSize 3 -SmallSize 5 -Children {  
+                                    New-UDAutocomplete -id "txtSearchComputerADD" -Icon (New-UDIcon -Icon 'Users') -Label "Enter group name" -OnLoadOptions {
+                                        If ($Body.length -ge 3) {
+                                            $Session:SelectedGroup = Get-ADObject -LDAPFilter "(&(objectCategory=group)(anr=$Body))" -SearchBase $OUGrpPath -Properties SamAccountName
+                                            $Session:SelectedGroup | Select-Object -ExpandProperty SamAccountName | ConvertTo-Json
+                                        }
+                                    } -OnChange {
+                                        $Session:SelectedGroup = $Body
+                                    }
+                                }
+                                New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 3 -MediumSize 3 -SmallSize 5 -Children {
                                     New-UDTooltip -TooltipContent {
                                         New-UDTypography -Text "Add $($ComputerName) to the group"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon user_plus) -size large -Onclick { 
                                             $SearchComputerADGroup = (Get-UDElement -Id "txtSearchComputerADD").value
-                                            $SearchComputerADGroup = $SearchComputerADGroup.trim()
+                                            if (-Not([string]::IsNullOrEmpty($SearchComputerADGroup))) {
+                                                $GrpCleanText = $SearchComputerADGroup.Replace("CN=", "").Split(",") | Select-Object -First 1
+                                                $SearchComputerADGroup = $SearchComputerADGroup.trim()
+                                            }
 
-                                            if (Get-ADGroup -Filter "samaccountname -eq '$($SearchComputerADGroup)'" ) {
-                                                try {
-                                                    Add-ADGroupMember -Identity $SearchComputerADGroup -Members "$($ComputerName)$" 
-                                                    Show-UDToast -Message "$($ComputerName) are now a member of $($SearchComputerADGroup)!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                                    Sync-UDElement -Id 'ComputerSearchGroupList'
-                                                    if ($ActiveEventLog -eq "True") {
-                                                        Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($ComputerName) to $($SearchComputerADGroup)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                                    }
-                                                }
-                                                catch {
-                                                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            if (-Not([string]::IsNullOrEmpty($SearchComputerADGroup))) {
+                                                if ((Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'" -SearchBase $OUComputerPath -Properties memberof).memberof -like "$($GrpCleanText)") {
+                                                    Show-UDToast -Message "Användaren $($ComputerName) är redan medlem i gruppen $($GrpCleanText), ingen åtgärd har utförts!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                                     Break
+                                                }
+                                                else {
+                                                    try {
+                                                        Add-ADGroupMember -Identity $SearchComputerADGroup -Members "$($ComputerName)$" 
+                                                        Show-UDToast -Message "$($ComputerName) are now a member of $($SearchComputerADGroup)!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                        Sync-UDElement -Id 'ComputerSearchGroupList'
+                                                        if ($ActiveEventLog -eq "True") {
+                                                            Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($ComputerName) to $($SearchComputerADGroup)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                        }
+                                                    }
+                                                    catch {
+                                                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                        Break
+                                                    }
                                                 }
                                             }
                                             else {
-                                                Show-UDToast -Message "Can't find $($SearchComputerADGroup) in the AD!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                                Break
+                                                Show-UDToast -Message "You have either missed to enter a group name or the group are missing in the AD!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                                Break        
                                             }
                                         }
                                     }
+                                    
                                     Add-MultiGroupBtn -RefreshOnClose "ComputerSearchGroupList"  -ObjToAdd "$($ComputerName)$" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    New-UDTooltip -TooltipContent {
+                                        New-UDTypography -Text "Refresh the group member list!"
+                                    } -content { 
+                                        New-UDButton -Icon (New-UDIcon -Icon sync_alt) -Size large -OnClick {
+                                            Sync-UDElement -Id "ComputerSearchGroupList"
+                                        }
+                                    }
                                 }
                             } -LoadingComponent {
                                 New-UDProgress -Circular

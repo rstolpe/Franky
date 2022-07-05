@@ -1,5 +1,5 @@
 ﻿<#
-    Copyright (C) 2022  KeepCodeOpen - The ultimate IT-Support dashboard
+    Copyright (C) 2022  Stolpe.io - The ultimate IT-Support dashboard
     <https://stolpe.io>
 
     This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,7 @@
 Function Show-MonitorInfoBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][String]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][String]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -222,7 +219,7 @@ function Show-NetAdpBtn {
                                                 Sync-UDElement -Id 'AdapterData'
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
                                         }
@@ -244,7 +241,7 @@ function Show-NetAdpBtn {
                                                 Sync-UDElement -Id 'AdapterData'
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
                                         }
@@ -266,7 +263,7 @@ function Show-NetAdpBtn {
                                             Sync-UDElement -Id 'AdapterData'
                                         }
                                         catch {
-                                            Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                             Break
                                         }
                                     }
@@ -391,10 +388,7 @@ function Show-ProcessTableBtn {
 function Show-InstalledSoftwareBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -445,10 +439,7 @@ function Show-InstalledSoftwareBtn {
 function Show-AutostartTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -502,10 +493,7 @@ function Show-AutostartTableBtn {
 function Show-ServicesTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -523,27 +511,13 @@ function Show-ServicesTableBtn {
                             New-UDTableColumn -Title 'Name' -Property 'Name' -IncludeInExport -IncludeInSearch -DefaultSortColumn
                             New-UDTableColumn -Title 'Description' -Property 'DisplayName' -IncludeInExport
                             New-UDTableColumn -Title 'Start Type' -Property 'StartType' -IncludeInExport -IncludeInSearch -Hidden
-                            New-UDTableColumn -Title 'Start Type' -Property '.' -IncludeInExport -IncludeInSearch -Render {
+                            New-UDTableColumn -Title 'Start Type' -Property ' ' -IncludeInExport -IncludeInSearch -Render {
                                 New-UDSelect -id "$($Eventdata.Name)StartupTypeSelect" -Option {
-                                    switch ($Eventdata.StartType) {
-                                        Manual {
-                                            New-UDSelectOption -Name 'Manual' -Value "Manual"
-                                            New-UDSelectOption -Name 'Automatic' -Value "Automatic"
-                                            New-UDSelectOption -Name 'Disabled' -Value "Disabled"
-                                        }
-                                        Automatic {
-                                            New-UDSelectOption -Name 'Automatic' -Value "Automatic"
-                                            New-UDSelectOption -Name 'Manual' -Value "Manual"
-                                            New-UDSelectOption -Name 'Disabled' -Value "Disabled"
+                                    New-UDSelectOption -Name 'Automatic' -Value "Automatic"
+                                    New-UDSelectOption -Name 'Manual' -Value "Manual"
+                                    New-UDSelectOption -Name 'Disabled' -Value "Disabled"
+                                } -DefaultValue $Eventdata.StartType
 
-                                        }
-                                        Disabled {
-                                            New-UDSelectOption -Name 'Disabled' -Value "Disabled"
-                                            New-UDSelectOption -Name 'Automatic' -Value "Automatic"
-                                            New-UDSelectOption -Name 'Manual' -Value "Manual"
-                                        }
-                                    }
-                                }
                                 New-UDTooltip -TooltipContent {
                                     New-UDTypography -Text "Change startup type"
                                 } -content { 
@@ -584,19 +558,19 @@ function Show-ServicesTableBtn {
                                             Sync-UDElement -Id 'serviceTable'
                                         }
                                         catch {
-                                            Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                             Break
                                         }
                                     }
                                 }
                             }
                             New-UDTableColumn -Title 'Status' -Property 'Status' -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Title '.' -Property 'Actions' -Render {
+                            New-UDTableColumn -Title ' ' -Property 'Actions' -Render {
                                 if ($EventData.Status -eq 'Running') {
                                     New-UDTooltip -TooltipContent {
                                         New-UDTypography -Text "Stop"
                                     } -content { 
-                                        New-UDButton  -Icon (New-UDIcon -Icon stop) -size small -OnClick { 
+                                        New-UDButton -Icon (New-UDIcon -Icon stop) -size small -OnClick { 
                                             try {
                                                 $KillService = $EventData.Name
                                                 Invoke-Command -ComputerName $Computer -Scriptblock {
@@ -610,7 +584,7 @@ function Show-ServicesTableBtn {
                                                 Sync-UDElement -Id 'serviceTable'
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
                                         }
@@ -632,7 +606,7 @@ function Show-ServicesTableBtn {
                                                 Sync-UDElement -Id 'serviceTable'
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
 
@@ -657,7 +631,7 @@ function Show-ServicesTableBtn {
                                                 Sync-UDElement -Id 'serviceTable'
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
 
@@ -847,7 +821,7 @@ function Remove-UserProfilesBtn {
                                     Sync-UDElement -id 'ShowUsrProfdata'
                                 }
                                 catch {
-                                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                     foreach ($btn in $btns) {
                                         Set-UDElement -Id $btn -Properties @{
                                             disabled = $false
@@ -889,9 +863,6 @@ Function Compare-ComputerGrpsBtn {
     Param(
         [Parameter(Mandatory)][String]$Computer,
         [Parameter(Mandatory)][String]$YourFullDomain,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
         [Parameter(Mandatory = $false)][String]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
@@ -1038,22 +1009,22 @@ Function Compare-ComputerGrpsBtn {
     }
 }
 
-function Show-SchedualTaskTableBtn {
+function Show-ScheduleTaskTableBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
-        New-UDTypography -Text "Show scheduled tasks on $($Computer)"
+        New-UDTypography -Text "Show Scheduled tasks on $($Computer)"
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon business_time) -size medium -Onclick {
-            Show-UDModal -Header { "Schedual Tasks on $($Computer)" } -Content {
-                New-UDDynamic -Id 'Schedual' -content {
+            Show-UDModal -Header { "Schedule Tasks on $($Computer)" } -Content {
+                New-UDDynamic -Id 'Schedule' -content {
                     New-UDGrid -Spacing '1' -Container -Children {
 
                         $Columns = @(
-                            New-UDTableColumn -Title '.' -Property '.' -Render {
+                            New-UDTableColumn -Title ' ' -Property '.' -Render {
                                 if ($EventData.State -notlike 'Running' ) {
                                     if ($EventData.State -like 'Disabled') {
                                         New-UDTooltip -TooltipContent {
@@ -1064,10 +1035,10 @@ function Show-SchedualTaskTableBtn {
                                                     $CimSession = New-CimSession -ComputerName $Computer
                                                     Enable-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
                                                     Remove-CimSession -InstanceId $CimSession.InstanceId
-                                                    Sync-UDElement -id "Schedual"
+                                                    Sync-UDElement -id "Schedule"
                                                 }
                                                 catch {
-                                                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                     Break
                                                 }
                                             }
@@ -1082,10 +1053,10 @@ function Show-SchedualTaskTableBtn {
                                                     $CimSession = New-CimSession -ComputerName $Computer
                                                     Disable-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
                                                     Remove-CimSession -InstanceId $CimSession.InstanceId
-                                                    Sync-UDElement -id "Schedual"
+                                                    Sync-UDElement -id "Schedule"
                                                 }
                                                 catch {
-                                                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                     Break
                                                 }
                                             }    
@@ -1099,10 +1070,10 @@ function Show-SchedualTaskTableBtn {
                                                 $CimSession = New-CimSession -ComputerName $Computer
                                                 Start-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
                                                 Remove-CimSession -InstanceId $CimSession.InstanceId
-                                                Sync-UDElement -id "Schedual"
+                                                Sync-UDElement -id "Schedule"
                                             }
                                             catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                                 Break
                                             }
                                         }
@@ -1133,7 +1104,7 @@ function Show-SchedualTaskTableBtn {
                 }
             } -Footer {
                 New-UDButton -Text "Refresh list" -OnClick { 
-                    Sync-UDElement -id 'Schedual'
+                    Sync-UDElement -id 'Schedule'
                 }
                 New-UDButton -Text "Close" -OnClick {
                     Hide-UDModal
@@ -1220,9 +1191,6 @@ function Remove-TempFilesClientBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
         [Parameter(Mandatory)][string]$CurrentHost,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
@@ -1248,7 +1216,6 @@ function Remove-TempFilesClientBtn {
                     foreach ($btn in $Btns) {
                         Set-UDElement -Id "$($btn)" -Properties @{
                             disabled = $true 
-                            text     = "Cleaning..."
                         }
                     }
 
@@ -1276,7 +1243,7 @@ function Remove-TempFilesClientBtn {
                                 } 
                             }
 
-                            $CleanReport.Add("disabeling wuauserv...")
+                            $CleanReport.Add("disabling wuauserv...")
                             Stop-Service -Name 'wuauserv'
                             do {
                                 $CleanReport.Add('Waiting for wuauserv to stop...')
@@ -1316,36 +1283,19 @@ function Remove-TempFilesClientBtn {
                         Set-UDElement -Id 'CleanClientCode' -Properties @{
                             code = $JobOutput
                         } 
-                        Set-UDElement -Id 'CloseBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Close"
-                        }
-
-                        Set-UDElement -Id 'StartBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Start"
-                        }
-                        Set-UDElement -Id 'LogBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Download Log"
+                        foreach ($btn in $Btns) {
+                            Set-UDElement -Id "$($btn)" -Properties @{
+                                disabled = $false
+                            }
                         }
                         Sync-UDElement -Id $RefreshOnClose
                     }
                     catch {
-                        Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
- 
-                        Set-UDElement -Id 'CloseBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Close"
-                        }
-
-                        Set-UDElement -Id 'StartBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Start"
-                        }
-                        Set-UDElement -Id 'LogBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Download Log"
+                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                        foreach ($btn in $Btns) {
+                            Set-UDElement -Id "$($btn)" -Properties @{
+                                disabled = $false
+                            }
                         }
                         Break
                     }
@@ -1487,8 +1437,6 @@ Function Remove-EdgeSettings {
     Param(
         [Parameter(Mandatory)][string]$Computer
     )
-
-
     Show-UDModal -Header { "Delete Microsoft Edge settings on $($Computer) for a user" } -Content {
         New-UDDynamic -Id 'Edge' -content {
             $Profiles = Get-CimInstance -ComputerName $Computer -className Win32_UserProfile | Where-Object { (!$_.Special) -and ($_.LocalPath -ne 'C:\Users\Administrator') -and ($_.LocalPath -ne 'C:\Users\Administratör') } | ForEach-Object { $_.LocalPath.split('\')[-1] }
@@ -1754,7 +1702,7 @@ Function New-ADComputerFranky {
                                 Hide-UDModal
                             }
                             catch {
-                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                 Break
                             }
                         }
@@ -1768,4 +1716,4 @@ Function New-ADComputerFranky {
     }
 }
 
-Export-ModuleMember -Function "New-ADComputerFranky", "Remove-ChromeSettings", "Remove-EdgeSettings", "Ping-ADComputer", "Disconnect-UserFromComputer", "Restart-ADComputer", "Show-MonitorInfoBtn", "Show-InstalledDriversBtn", "Get-SysInfo", "Show-NetAdpBtn", "Show-ProcessTableBtn", "Show-InstalledSoftwareBtn", "Show-AutostartTableBtn", "Show-ServicesTableBtn", "Remove-UserProfilesBtn", "Compare-ComputerGrpsBtn", "Show-SchedualTaskTableBtn", "Remove-TempFilesClientBtn"
+Export-ModuleMember -Function "New-ADComputerFranky", "Remove-ChromeSettings", "Remove-EdgeSettings", "Ping-ADComputer", "Disconnect-UserFromComputer", "Restart-ADComputer", "Show-MonitorInfoBtn", "Show-InstalledDriversBtn", "Get-SysInfo", "Show-NetAdpBtn", "Show-ProcessTableBtn", "Show-InstalledSoftwareBtn", "Show-AutostartTableBtn", "Show-ServicesTableBtn", "Remove-UserProfilesBtn", "Compare-ComputerGrpsBtn", "Show-ScheduleTaskTableBtn", "Remove-TempFilesClientBtn"

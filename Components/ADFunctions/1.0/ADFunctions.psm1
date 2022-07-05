@@ -1,5 +1,5 @@
 ﻿<#
-    Copyright (C) 2022  KeepCodeOpen - The ultimate IT-Support dashboard
+    Copyright (C) 2022  Stolpe.io - The ultimate IT-Support dashboard
     <https://stolpe.io>
 
     This program is free software: you can redistribute it and/or modify
