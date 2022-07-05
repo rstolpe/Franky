@@ -23,8 +23,6 @@ will not work.
 If you activate Load Balancing remember to fill out the hostname the AppTokens for each host in the LoadBalancing component.
 #>
 
-[bool]$ActivateLoadBalancing = $false
-
 if ($ActivateLoadBalancing -eq $true) {
     $GetAppToken = Get-AppToken
     $AppToken = $GetAppToken.CurrentAppToken

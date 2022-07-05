@@ -26,7 +26,7 @@ Function Show-MonitorInfoBtn {
         New-UDTypography -Text "Show information about connected displays on $($Computer)"
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon desktop) -size medium -Onclick {
-            Show-UDModal -Header { "Monitor information from $Computer" } -Content {
+            Show-UDModal -Header { "Monitor information from $($Computer)" } -Content {
                 New-UDDynamic -Id 'DisplayInfo' -content {
                     New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
@@ -34,7 +34,24 @@ Function Show-MonitorInfoBtn {
                         }
 
                         $Columns = @(
-                            New-UDTableColumn -Title 'Active' -Property 'Active' -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                            New-UDTableColumn -Title 'Active' -Property 'Active' -IncludeInExport -IncludeInSearch -DefaultSortColumn -Render {
+                                switch ($Eventdata.Active) {
+                                    True {
+                                        New-UDTooltip -TooltipContent {
+                                            New-UDTypography -Text "This monitor are connected and powered on"
+                                        } -content { 
+                                            New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                        }
+                                    }
+                                    False {
+                                        New-UDTooltip -TooltipContent {
+                                            New-UDTypography -Text "This monitor are either disconnected or powered off"
+                                        } -content { 
+                                            New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                        }
+                                    }
+                                }
+                            }
                             New-UDTableColumn -Title 'Manufacturer' -Property 'ManufacturerName' -IncludeInExport -IncludeInSearch -Render {
                                 switch ($EventData.ManufacturerName) {
                                     'PHL' { "Philips" }
@@ -69,7 +86,7 @@ Function Show-MonitorInfoBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $DisplayData -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $DisplayData -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50 -PaginationLocation top
                             }
                         }
                     }
@@ -136,7 +153,7 @@ function Show-InstalledDriversBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Id 'DriversSearchTable' -Data $DriversData -Columns $DriversColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
+                                New-UDTable -Id 'DriversSearchTable' -Data $DriversData -Columns $DriversColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -PaginationLocation top
                             }
                         }
                     }
@@ -151,7 +168,7 @@ function Show-InstalledDriversBtn {
                     Hide-UDModal
                 }
                                         
-            } -FullWidth -MaxWidth 'xl' -Persistent
+            } -Persistent
         }
     }
 }
@@ -166,7 +183,13 @@ Function Get-SysInfo {
         [PSCustomObject]@{
             Computer   = Get-CimInstance -CimSession $CimSession -ClassName Win32_ComputerSystem | Select-Object Manufacturer, Model, SystemFamily, UserName
             OS         = Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem | select-object LastBootUpTime, InstallDate
-            UpTime     = (get-date) - (Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem).LastBootUpTime | Select-Object days, hours, minutes
+            UpTime     = (get-date) - (Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem).LastBootUpTime | Select-Object days, hours, minutes | Foreach-Object {
+                [PSCustomObject]@{
+                    UpDays    = if ($Null -eq $_.Days -or $_.Days -eq "0") { $Null } else { "$($_.Days) days " }
+                    UpHours   = if ($Null -eq $_.Hours -or $_.Hours -eq "0") { $Null } else { "$($_.Hours) hours" }
+                    UpMinutes = if ($Null -eq $_.Minutes -or $_.Minutes -eq "0") { $Null } else { " $($_.Minutes) minutes" }
+                }
+            }
             BIOS       = Get-CimInstance -CimSession $CimSession -ClassName Win32_BIOS | Select-Object BIOSVersion, SerialNumber
             RAM        = (Get-CimInstance -CimSession $CimSession -ClassName Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum / 1gb
             HDD        = Get-CimInstance -CimSession $CimSession -ClassName Win32_LogicalDisk | where-object DeviceID -eq "C:" | Select-Object -Property DeviceID, @{'Name' = 'Total'; Expression = { [int]($_.Size / 1GB) } }, @{'Name' = 'Free'; Expression = { [int]($_.FreeSpace / 1GB) } }
@@ -278,7 +301,7 @@ function Show-NetAdpBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Id 'AdapterSearchTable' -Data $AllAdapters -Columns $AdaptersColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
+                                New-UDTable -Id 'AdapterSearchTable' -Data $AllAdapters -Columns $AdaptersColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -PaginationLocation top
                             }
                         }
                     }
@@ -365,7 +388,7 @@ function Show-ProcessTableBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $Processes -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $Processes -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50 -PaginationLocation top
                             }
                         }
                     }
@@ -416,7 +439,7 @@ function Show-InstalledSoftwareBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Id 'InstallSWSearchTable' -Data $InstallData -Columns $InstallColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
+                                New-UDTable -Id 'InstallSWSearchTable' -Data $InstallData -Columns $InstallColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -PaginationLocation top
                             }
                         }
                     }
@@ -470,7 +493,7 @@ function Show-AutostartTableBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $Autostarts -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $Autostarts -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50 -PaginationLocation top
                             }
                         }
                     }
@@ -519,7 +542,7 @@ function Show-ServicesTableBtn {
                                 } -DefaultValue $Eventdata.StartType
 
                                 New-UDTooltip -TooltipContent {
-                                    New-UDTypography -Text "Change startup type"
+                                    New-UDTypography -Text "Change startup type for $($Eventdata.Name)"
                                 } -content { 
                                     New-UDButton  -Icon (New-UDIcon -Icon exchange_alt) -size small -OnClick { 
                                         $StartupTypeSelectSwitch = Get-UDElement -Id "$($Eventdata.Name)StartupTypeSelect"
@@ -568,7 +591,7 @@ function Show-ServicesTableBtn {
                             New-UDTableColumn -Title ' ' -Property 'Actions' -Render {
                                 if ($EventData.Status -eq 'Running') {
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Stop"
+                                        New-UDTypography -Text "Stop $($Eventdata.Name)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon stop) -size small -OnClick { 
                                             try {
@@ -590,7 +613,7 @@ function Show-ServicesTableBtn {
                                         }
                                     }
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Restart"
+                                        New-UDTypography -Text "Restart $($Eventdata.Name)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon redo_alt) -size small -OnClick { 
                                             try {
@@ -615,7 +638,7 @@ function Show-ServicesTableBtn {
                                 }
                                 else {
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Start"
+                                        New-UDTypography -Text "Start $($Eventdata.Name)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon play) -size small -OnClick { 
                                             try {
@@ -650,7 +673,7 @@ function Show-ServicesTableBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $Services -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $Services -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50 -PaginationLocation top
                             }
                         }
                     }
@@ -665,7 +688,7 @@ function Show-ServicesTableBtn {
                     Hide-UDModal
                 }
                                         
-            } -FullWidth -MaxWidth 'lg' -Persistent
+            } -MaxWidth 'xl' -Persistent
         }
     }
 }
@@ -698,7 +721,7 @@ function Remove-UserProfilesBtn {
 
                 $SearchComputerGroupColumns = @(
                     New-UDTableColumn -Property ProfileUserName -Title "User" -IncludeInExport -IncludeInSearch -DefaultSortColumn
-                    New-UDTableColumn -Property ProfilePath -Title "Search path" -IncludeInExport -IncludeInSearch
+                    New-UDTableColumn -Property ProfilePath -Title "Profile path" -IncludeInExport -IncludeInSearch
                     New-UDTableColumn -Property LastUsed -Title "Last Used" -IncludeInExport -IncludeInSearch
                     New-UDTableColumn -Property NotUsedFor -Title "Not used for" -IncludeInExport -IncludeInSearch -Render {
                         if (-Not([string]::IsNullOrEmpty($Eventdata.LastUsed))) {
@@ -747,7 +770,7 @@ function Remove-UserProfilesBtn {
                                 else {
                                     try {
                                         Show-UDToast -Message "Deleting of the profile for $($EventData.ProfileUserName) has started, please wait..." -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
-                                        $Btns = @("CloseBtn", "SelectedBtn")
+                                        $Btns = @("CloseBtn", "SelectedBtn", "RefreshBtn")
                                         foreach ($btn in $btns) {
                                             Set-UDElement -Id $btn -Properties @{
                                                 disabled = $true 
@@ -788,59 +811,70 @@ function Remove-UserProfilesBtn {
                 else {
                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                         $SearchOption = New-UDTableTextOption -Search "Search"
-                        New-UDTable -Id 'ComputerSearchTable' -Data $SearchComputerGroupData -Columns $SearchComputerGroupColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -ShowSelection
+                        New-UDTable -Id 'ProfileTable' -Data $SearchComputerGroupData -Columns $SearchComputerGroupColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -ShowSelection -PaginationLocation top
                     }
                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                        New-UDButton -Text "Delete selected" -OnClick {
-                            $ComputerSearchTable = Get-UDElement -Id "ComputerSearchTable"
-                            $ComputerSearchLog = @($ComputerSearchTable.selectedRows.User)
-                            if ($Null -ne $ComputerSearchTable.selectedRows.User) {                  
-                                try {
+                        New-UDTooltip -TooltipContent {
+                            New-UDTypography -Text "Delete selected profiles"
+                        } -content { 
+                            New-UDButton -Icon (New-UDIcon -Icon trash_alt) -Size large -OnClick {
+                                $ComputerSearchTable = Get-UDElement -Id "ProfileTable"
+                                $RemovedProfiles = New-Object System.Collections.Generic.List[System.Object]             
+                                if ($Null -ne $ComputerSearchTable.selectedRows.ProfileUserName) {
+                                    Show-UDToast -Message "Starting to delete user profiles, please wait..." -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000                 
                                     $Btns = @("CloseBtn", "SelectedBtn", "RefreshBtn")
                                     foreach ($btn in $btns) {
                                         Set-UDElement -Id $btn -Properties @{
                                             disabled = $true 
-                                            text     = "Deleting..."
                                         }
                                     }
-                                    @($ComputerSearchTable.selectedRows.ForEach( { 
-                                                if ($_.ProfileLoaded -like "False") {
-                                                    $UserRmProfileName = $_.User.Replace("$($YourDomain)\", "")
-                                                    Get-WmiObject -ComputerName $Computer Win32_UserProfile | Where-Object { $_.LocalPath -eq "C:\Users\$($UserRmProfileName)" } | Remove-WmiObject
-                                                    if ($ActiveEventLog -eq "True") {
-                                                        Write-EventLog -LogName $EventLogName -Source "DeletedUserProfile" -EventID 10 -EntryType Information -Message "$($User) did delete $($UserRmProfileName) user profile from $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                    try {
+                                        $CimSession = New-CimSession -ComputerName $Computer
+                                        @($ComputerSearchTable.selectedRows.ForEach( { 
+                                                    $ProfileToDelete = $_.ProfileUserName
+                                                    if ($_.ProfileLoaded -eq "True") {
+                                                        Show-UDToast -Message "The profile for $($ProfileToDelete) are in use, ignoring that profile and deleting the others!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                                        return
                                                     }
-                                                }
-                                            } ) )
-                                    Show-UDToast -Message "The profiles for $($ComputerSearchLog -join ",") has been deleted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                    foreach ($btn in $btns) {
-                                        Set-UDElement -Id $btn -Properties @{
-                                            disabled = $false
+                                                    elseif ($_.ProfileLoaded -eq "False") {
+                                                        Get-CimInstance -CimSession $CimSession Win32_UserProfile | Where-Object { $_.LocalPath -eq "C:\Users\$($ProfileToDelete)" } | Remove-CimInstance
+                                                        if ($ActiveEventLog -eq "True") {
+                                                            Write-EventLog -LogName $EventLogName -Source "DeletedUserProfile" -EventID 10 -EntryType Information -Message "$($User) did delete $($ProfileToDelete) user profile from $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                        }
+                                                        $RemovedProfiles.Add($ProfileToDelete)
+                                                    }
+                                                } ) )
+                                        if (-not ([string]::IsNullOrEmpty($RemovedProfiles))) {
+                                            Show-UDToast -Message "The following profiles has been successfully deleted $($RemovedProfiles -join ",")!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                         }
+                                        else {
+                                            Show-UDToast -Message "No profile was deleted!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                        }
+                                        Remove-CimSession -InstanceId $CimSession.InstanceId
+                                        foreach ($btn in $btns) {
+                                            Set-UDElement -Id $btn -Properties @{
+                                                disabled = $false
+                                            }
+                                        }
+                                        Sync-UDElement -id 'ShowUsrProfdata'
                                     }
-                                    Sync-UDElement -id 'ShowUsrProfdata'
+                                    catch {
+                                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                        foreach ($btn in $btns) {
+                                            Set-UDElement -Id $btn -Properties @{
+                                                disabled = $false
+                                            }
+                                        }
+                                        Sync-UDElement -id 'ShowUsrProfdata'
+                                        Break
+                                    }
                                 }
-                                catch {
-                                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                    foreach ($btn in $btns) {
-                                        Set-UDElement -Id $btn -Properties @{
-                                            disabled = $false
-                                        }
-                                    }
-                                    Sync-UDElement -id 'ShowUsrProfdata'
+                                else {
+                                    Show-UDToast -Message "You have not selected any profile! $($ComputerSearchTable.selectedRows.ProfileUserName)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                     Break
                                 }
-                            }
-                            else {
-                                Show-UDToast -Message "You have not selected any profile!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                foreach ($btn in $btns) {
-                                    Set-UDElement -Id $btn -Properties @{
-                                        disabled = $false
-                                    }
-                                }
-                                Break
-                            }
-                        } -id "SelectedBtn"
+                            } -id "SelectedBtn"
+                        }
                     }
                 }
             }
@@ -897,7 +931,7 @@ Function Compare-ComputerGrpsBtn {
                                             Write-EventLog -LogName $EventLogName -Source "CompareComputerADGroups" -EventID 10 -EntryType Information -Message "$($User) did compare $($Computer) against $($CompComputer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                         }
                                         $Columns = @(
-                                            New-UDTableColumn -Title '.' -Property '.' -render {
+                                            New-UDTableColumn -Title ' ' -Property '.' -render {
                                                 New-UDTooltip -TooltipContent {
                                                     New-UDTypography -Text "Add $($Computer) to this group"
                                                 } -content { 
@@ -933,7 +967,7 @@ Function Compare-ComputerGrpsBtn {
                                         else {
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                                New-UDTable -Title "$($Computer) is not a member of the following groups" -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200                      
+                                                New-UDTable -Title "$($Computer) is not a member of the following groups" -id "CompTable" -Data $CompData -Columns $Columns -DefaultSortDirection "Ascending" -TextOption $SearchOption -ShowSearch -ShowSelection -ShowPagination -Dense -Sort -Export -ExportOption "xlsx, PDF, CSV" -PageSize 200 -PaginationLocation top                      
                                             }
                                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children { 
                                                 New-UDButton -Text "Add to selected" -OnClick {
@@ -1028,7 +1062,7 @@ function Show-ScheduleTaskTableBtn {
                                 if ($EventData.State -notlike 'Running' ) {
                                     if ($EventData.State -like 'Disabled') {
                                         New-UDTooltip -TooltipContent {
-                                            New-UDTypography -Text "Enable"
+                                            New-UDTypography -Text "Enable $($EventData.TaskName)"
                                         } -content { 
                                             New-UDButton -Icon (New-UDIcon -Icon play) -size small -OnClick {
                                                 try {
@@ -1046,7 +1080,7 @@ function Show-ScheduleTaskTableBtn {
                                     }
                                     elseif ($EventData.State -like 'Ready') {
                                         New-UDTooltip -TooltipContent {
-                                            New-UDTypography -Text "Disable"
+                                            New-UDTypography -Text "Disable $($EventData.TaskName)"
                                         } -content { 
                                             New-UDButton -Icon (New-UDIcon -Icon stop) -size small -OnClick {
                                                 try {
@@ -1063,7 +1097,7 @@ function Show-ScheduleTaskTableBtn {
                                         }
                                     }
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Run"
+                                        New-UDTypography -Text "Run $($EventData.TaskName)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon play_circle) -size small -OnClick {
                                             try {
@@ -1095,7 +1129,7 @@ function Show-ScheduleTaskTableBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $Schedules  -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $Schedules  -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50 -PaginationLocation top
                             }
                         }
                     }
@@ -1303,7 +1337,12 @@ function Remove-TempFilesClientBtn {
 
                 New-UDButton -Text 'Download Log' -OnClick {
                     $code = (Get-UDElement -Id 'CleanClientCode').code
-                    Start-UDDownload -StringData $code -FileName "$($Computer)-CleanTempFilesFrom.log"
+                    if (-Not([string]::IsNullOrEmpty($code))) {
+                        Start-UDDownload -StringData $code -FileName "$($Computer)-CleanTempFilesFrom.log"
+                    }
+                    else {
+                        Show-UDToast -Message "Nothing to download as the log are empty!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                    }
                 } -id 'LogBtn'
 
                 New-UDButton -Text "Close" -OnClick {
@@ -1386,7 +1425,7 @@ Function Ping-ADComputer {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Id 'PingTable' -Data $PingResults -Columns $PingColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20
+                                New-UDTable -Id 'PingTable' -Data $PingResults -Columns $PingColumns -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 20 -PaginationLocation top
                             }
                             if ($ActiveEventLog -eq "True") {
                                 Write-EventLog -LogName $EventLogName -Source "SendPing" -EventID 10 -EntryType Information -Message "$($User) did ping $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
@@ -1427,7 +1466,7 @@ Function Ping-ADComputer {
                 New-UDButton -Text "Close" -OnClick {
                     Hide-UDModal
                 } -id 'CloseBtn'
-            } -FullWidth
+            } -Persistent
         }
     }
 }
@@ -1716,4 +1755,71 @@ Function New-ADComputerFranky {
     }
 }
 
-Export-ModuleMember -Function "New-ADComputerFranky", "Remove-ChromeSettings", "Remove-EdgeSettings", "Ping-ADComputer", "Disconnect-UserFromComputer", "Restart-ADComputer", "Show-MonitorInfoBtn", "Show-InstalledDriversBtn", "Get-SysInfo", "Show-NetAdpBtn", "Show-ProcessTableBtn", "Show-InstalledSoftwareBtn", "Show-AutostartTableBtn", "Show-ServicesTableBtn", "Remove-UserProfilesBtn", "Compare-ComputerGrpsBtn", "Show-ScheduleTaskTableBtn", "Remove-TempFilesClientBtn"
+Function Get-UserLoggInTime {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory)][String]$Computer
+    )
+    New-UDTooltip -TooltipContent {
+        New-UDTypography -Text "Se list over last persons that was logged in on $($Computer)"
+    } -content { 
+        New-UDButton -Icon (New-UDIcon -Icon question) -Size small -OnClick {
+            Show-UDModal -Header { "List over the last persons that was logged in on $($Computer)" } -Content {
+                New-UDGrid -Spacing '1' -Container -Children {
+                    $ExcludedProfiles = "C:\Users\Administrator", "C:\Users\Administratör"
+                    $LoggedInUsersData = Get-CimInstance -ComputerName $Computer -className Win32_UserProfile | Where-Object { (-Not ($_.Special)) } | Foreach-Object {
+                        if (-Not ($_.LocalPath -in $ExcludedProfiles)) {
+                            [PSCustomObject]@{
+                                User          = $_.LocalPath.split('\')[-1]
+                                LastUsed      = ($_.LastUseTime -as [DateTime]).ToString("yyyy-MM-dd HH:mm")
+                                ProfileLoaded = $_.Loaded
+                            }
+                        }
+                    }
+                    $Columns = @(
+                        New-UDTableColumn -Property User -Title "User" -IncludeInExport -IncludeInSearch
+                        New-UDTableColumn -Property LastUsed -Title "Last logged in" -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                        New-UDTableColumn -Property ProfileLoaded -Title "Is the user logged in?" -IncludeInExport -render {
+                            if ($EventData.ProfileLoaded -eq "True") {
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "Yes, $($EventData.User) are logged in $($Computer)"
+                                } -content { 
+                                    New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                }
+                            }
+                            else {
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "No, $($EventData.User) are not logged in $($Computer)"
+                                } -content { 
+                                    New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                }
+                            }
+                        }
+                    )
+                    if ([string]::IsNullOrEmpty($LoggedInUsersData)) {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                            New-UDAlert -Severity 'info' -Text "$($Computer) no data present!"
+                        }
+                    }
+                    else {
+                        New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                            $SearchMemberOption = New-UDTableTextOption -Search "Search"
+                            New-UDTable -Id 'GroupSearchTable' -Data $LoggedInUsersData -Columns $Columns -PaginationLocation top -DefaultSortDirection "Descending" -TextOption $SearchMemberOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -Sort -PageSize 10 -PageSizeOptions @(10, 20, 30, 40, 50)
+                        }
+                    }
+                }
+            } -Footer {
+                New-UDTooltip -TooltipContent {
+                    New-UDTypography -Text "Close"
+                } -content { 
+                    New-UDButton -Icon (New-UDIcon -Icon Window_Close) -Size large -OnClick {
+                        Hide-UDModal
+                    }
+                }
+            } -FullWidth -MaxWidth 'md' -Persistent
+        }
+    }
+
+}
+
+Export-ModuleMember -Function "Get-UserLoggInTime", "New-ADComputerFranky", "Remove-ChromeSettings", "Remove-EdgeSettings", "Ping-ADComputer", "Disconnect-UserFromComputer", "Restart-ADComputer", "Show-MonitorInfoBtn", "Show-InstalledDriversBtn", "Get-SysInfo", "Show-NetAdpBtn", "Show-ProcessTableBtn", "Show-InstalledSoftwareBtn", "Show-AutostartTableBtn", "Show-ServicesTableBtn", "Remove-UserProfilesBtn", "Compare-ComputerGrpsBtn", "Show-ScheduleTaskTableBtn", "Remove-TempFilesClientBtn"

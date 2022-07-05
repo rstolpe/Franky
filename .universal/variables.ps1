@@ -37,3 +37,5 @@ New-PSUVariable -Name "OUUsrPath" -Value "OU=Users,OU=PSU,DC=psu,DC=keepcodeopen
 
 # Temp folder for uploaded files
 New-PSUVariable -Name "UploadTemp" -Value "C:\Temp\" -Description "Path to folder where uploaded temp files are stored"
+
+New-PSUVariable -Name "ActivateLoadBalancing" -Value $false -Description "Activate or disable load balancing function"
