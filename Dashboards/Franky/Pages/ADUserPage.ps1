@@ -71,9 +71,9 @@ New-UDGrid -Spacing '1' -Container -Children {
                             $ADuser = Get-ADUser -Filter "samaccountname -eq '$($SearchUserName)'" -Properties pwdLastSet, CannotChangePassword, Description, CN, DisplayName, UserPrincipalName, MobilePhone, OfficePhone, Company, Department, Title, City, Division, Office, lockedout, passwordexpired, AccountExpirationDate, UserPrincipalName, Enabled, Passwordneverexpires, whenCreated, HomeDrive, HomeDirectory, Manager, Surname, Givenname, emailaddress, HomePhone, StreetAddress, State, postalcode, pobox, fax, SID, PrimaryGroup, OfficePhone, Country, ProfilePath, ScriptPath, DistinguishedName, co
                             $CollectPwdexpdate = (Get-ADUser -Filter "samaccountname -eq '$($SearchUserName)'" -Properties msDS-UserPasswordExpiryTimeComputed).'msDS-UserPasswordExpiryTimeComputed'
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                                Show-WhatUserManage   -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                New-PasswordADUserBtn   -RefreshOnClose "UserSearch" -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                Compare-ADUserGroupsBtn   -YourFullDomain $YourFullDomain -UserName $SearchUserName -RefreshOnClose "UserSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Show-WhatUserManage -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                New-PasswordADUserBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Compare-ADUserGroupsBtn -YourFullDomain $YourFullDomain -UserName $SearchUserName -RefreshOnClose "UserSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 Remove-ADObjectBtn -RefreshOnClose "UserSearchStart"  -ObjectType "User" -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                 New-RefreshUDElementBtn -RefreshUDElement 'UserSearch'
                             }
@@ -84,10 +84,23 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDHtml -Markup "<b>Information about $($ADuser.DisplayName)</b>"
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
-                                New-UDTypography -Text  "Enabled?"
+                                New-UDTypography -Text  "Is the account enabled?"
                             }
                             New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
-                                New-UDTypography -Text "$($ADuser.Enabled)"
+                                if ($ADuser.Enabled -eq $true) {
+                                    New-UDTooltip -TooltipContent {
+                                        New-UDTypography -Text "Yes, $($SearchUserName) is enabled, you can disable it again with the button on the right side."
+                                    } -content { 
+                                        New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                    }
+                                }
+                                elseif ($ADuser.Enabled -eq $false) {
+                                    New-UDTooltip -TooltipContent {
+                                        New-UDTypography -Text "No, $($SearchUserName) is disabled, you can enable it again with the button on the right side."
+                                    } -content { 
+                                        New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                    }
+                                }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 Set-EnableDisableADAccountBtn -CurrentDescription $ADUser.Description -ObjectStatus $ADuser.Enabled -ObjectToChange "User"  -RefreshOnClose "UserSearch" -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
@@ -562,6 +575,26 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             $SearchUserGroupColumns = @(
+                                New-UDTableColumn -Property " " -Title "" -render {
+                                    New-UDTooltip -TooltipContent {
+                                        New-UDTypography -Text "Delete $($SearchUserName) from the group $($EventData.Name)"
+                                    } -content { 
+                                        New-UDIconButton -Icon (New-UDIcon -Icon trash_alt -Style @{ color = 'rgba(0, 151, 207, 0.6)' }) -Size small -Onclick {
+                                            try {
+                                                Remove-ADGroupMember -Identity $EventData.Name -Members "$($SearchUserName)" -Confirm:$False
+                                                if ($ActiveEventLog -eq "True") {
+                                                    Write-EventLog -LogName $EventLogName -Source "RemoveFromGroup" -EventID 10 -EntryType Information -Message "$($User) did remove $($SearchUserName) from $($EventData.Name)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                }
+                                                Show-UDToast -Message "$($SearchUserName) are not a member of $($EventData.Name) anymore!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                                Sync-UDElement -Id 'UserSearchGroupList'
+                                            }
+                                            catch {
+                                                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                                Break
+                                            }
+                                        }
+                                    }
+                                }
                                 New-UDTableColumn -Property Name -Title "Name" -IncludeInExport -IncludeInSearch -DefaultSortColumn
                                 New-UDTableColumn -Property Description -Title "Description" -IncludeInExport -IncludeInSearch
                                 New-UDTableColumn -Property Info -Title "Info" -IncludeInExport -IncludeInSearch
@@ -611,7 +644,14 @@ New-UDGrid -Spacing '1' -Container -Children {
                             }
                             New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 1 -Children { }
                             New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 5 -Children { 
-                                New-UDTextbox -Id "txtSearchUserADD" -Icon (New-UDIcon -Icon 'users') -Label "Enter group name" -FullWidth
+                                New-UDAutocomplete -id "txtSearchUserADD" -Icon (New-UDIcon -Icon 'Users') -Label "Choose group" -OnLoadOptions {
+                                    If ($Body.length -ge 3) {
+                                        $Session:SelectedGroup = Get-ADObject -LDAPFilter "(&(objectCategory=group)(anr=$Body))" -SearchBase $OUGrpPath -Properties SamAccountName
+                                        $Session:SelectedGroup | Select-Object -ExpandProperty SamAccountName | ConvertTo-Json
+                                    }
+                                } -OnChange {
+                                    $Session:SelectedGroup = $Body
+                                }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 4 -Children { 
                                 New-UDTooltip -TooltipContent {

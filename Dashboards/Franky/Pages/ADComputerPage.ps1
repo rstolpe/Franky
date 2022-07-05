@@ -96,23 +96,22 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 if (Test-WSMan -ComputerName $ConvertToComputerName -ErrorAction SilentlyContinue) {
                                     $SystInfo = Get-SysInfo -Computer $ConvertToComputerName                                  
                                 }
-                                else {
-                                    $SystInfo = ""
+                                if ([string]::IsNullOrEmpty($SystInfo)) {
                                     New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                         New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($ConvertToComputerName), the administrating options are limited!"
                                     }
                                 }
                                 $SearchADComputer = Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'"  -Properties CN, DisplayName, DNSHostName, OperatingSystem, Description, CanonicalName, DistinguishedName, Created, SamAccountName, OperatingSystemVersion, whenChanged, SID, IPv4Address, IPv6Address, PrimaryGroup, ManagedBy, Location, Enabled, LastLogonDate
                                 New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                                    Restart-ADComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Ping-ADComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Restart-ADComputer -Computer $ConvertToComputerName
+                                    Ping-ADComputer  -Computer $ConvertToComputerName
                                     Show-MonitorInfoBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Compare-ComputerGrpsBtn  -Computer $ComputerName -YourFullDomain $YourFullDomain -RefreshOnClose "ComputerSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-ProcessTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-ProcessTableBtn  -Computer $ConvertToComputerName
                                     Show-ServicesTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-NetAdpBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-SchedualTaskTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                    Show-InstalledDriversBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Show-NetAdpBtn  -Computer $ConvertToComputerName
+                                    Show-SchedualTaskTableBtn  -Computer $ConvertToComputerName
+                                    Show-InstalledDriversBtn  -Computer $ConvertToComputerName
                                     Show-AutostartTableBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Show-InstalledSoftwareBtn  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
                                     Remove-ADObjectBtn -RefreshOnClose "ComputerSearchStart"  -ObjectType "Computer" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
@@ -139,16 +138,21 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             else {
                                                 switch ($UserImpactMenu.Value) {
                                                     2 {
-                                                        Disconnect-UserFromComputer  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        if ([string]::IsNullOrEmpty($SystInfo.Computer.UserName)) {
+                                                            Show-UDToast -Message "It's no logged in user on $($ConvertToComputerName)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                                        }
+                                                        else {
+                                                            Disconnect-UserFromComputer -CurrentLoggedInUser $SystInfo.Computer.UserName -Computer $ConvertToComputerName
+                                                        }
                                                     }
                                                     3 {
-                                                        Remove-UserProfilesBtn  -Computer $ConvertToComputerName -YourDomain $YourDomain.ToUpper() -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-UserProfilesBtn  -Computer $ConvertToComputerName -YourDomain $YourDomain.ToUpper()
                                                     }
                                                     4 {
-                                                        Remove-EdgeSettings  -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-EdgeSettings  -Computer $ConvertToComputerName
                                                     }
                                                     5 {
-                                                        Remove-ChromeSettings   -Computer $ConvertToComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                                        Remove-ChromeSettings -Computer $ConvertToComputerName
                                                     }
                                                 }
                                             }

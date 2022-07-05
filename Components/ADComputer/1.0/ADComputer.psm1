@@ -95,10 +95,7 @@ Function Show-MonitorInfoBtn {
 function Show-InstalledDriversBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -165,15 +162,11 @@ function Show-InstalledDriversBtn {
 Function Get-SysInfo {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][String]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][String]$Computer
     )
-
     $CimSession = New-CimSession -ComputerName $Computer
     if ($null -ne $CimSession) {
-        [pscustomobject]@{
+        [PSCustomObject]@{
             Computer   = Get-CimInstance -CimSession $CimSession -ClassName Win32_ComputerSystem | Select-Object Manufacturer, Model, SystemFamily, UserName
             OS         = Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem | select-object LastBootUpTime, InstallDate
             UpTime     = (get-date) - (Get-CimInstance -CimSession $CimSession -ClassName Win32_OperatingSystem).LastBootUpTime | Select-Object days, hours, minutes
@@ -189,23 +182,22 @@ Function Get-SysInfo {
 function Show-NetAdpBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Show network adapters on $($Computer)"
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon ethernet) -size medium -Onclick {
-            Show-UDModal -Header { "All network adpaters on $Computer" } -Content {
+            Show-UDModal -Header { "All network adapters on $Computer" } -Content {
                 New-UDDynamic -Id 'AdapterData' -content {
                     New-UDGrid -Spacing '1' -Container -Children {
                         if ($ActiveEventLog -eq "True") {
                             Write-EventLog -LogName $EventLogName -Source "ShowNetworkAdapters" -EventID 10 -EntryType Information -Message "$($User) did look at network adapters for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                         }
-                        $AllAdapters = Get-NetAdapter -Name * -CimSession $Computer | select-object @("Name", "InterfaceDescription", "Status", "LinkSpeed", "MacAddress")
+                        $CimSession = New-CimSession -ComputerName $Computer
+                        $AllAdapters = Get-NetAdapter -CimSession $CimSession -Name * | select-object @("Name", "InterfaceDescription", "Status", "LinkSpeed", "MacAddress")
+                        Remove-CimSession -InstanceId $CimSession.InstanceId
 
                         $AdaptersColumns = @(
                             New-UDTableColumn -Property Name -Title "Name" -IncludeInExport -IncludeInSearch -DefaultSortColumn
@@ -213,18 +205,16 @@ function Show-NetAdpBtn {
                             New-UDTableColumn -Property Status -Title "Status" -IncludeInExport -IncludeInSearch
                             New-UDTableColumn -Property LinkSpeed -Title "Link Speed" -IncludeInExport -IncludeInSearch
                             New-UDTableColumn -Property MacAddress -Title "MAC Address" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property Functions -Title '.' -Render {
+                            New-UDTableColumn -Property Functions -Title ' ' -Render {
                                 if ($EventData.Status -eq "Up") {
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Disable Network adapter"
+                                        New-UDTypography -Text "Disable Network adapter $($EventData.Name)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon stop) -size small -Onclick {
-                                            $AdapterName = $EventData.Name
                                             try {
-                                                Invoke-Command -ComputerName $Computer -Scriptblock {
-                                                    Param($AdapterName)
-                                                    Disable-NetAdapter -Name $AdapterName
-                                                } -ArgumentList $AdapterName
+                                                $CimSession = New-CimSession -ComputerName $Computer
+                                                Disable-NetAdapter -CimSession $CimSession -Name $EventData.Name
+                                                Remove-CimSession -InstanceId $CimSession.InstanceId
                                                 if ($ActiveEventLog -eq "True") {
                                                     Write-EventLog -LogName $EventLogName -Source "DisableNetworkAdapter" -EventID 10 -EntryType Information -Message "$($User) did disable network adapter for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                                 }
@@ -240,15 +230,13 @@ function Show-NetAdpBtn {
                                 }
                                 else {
                                     New-UDTooltip -TooltipContent {
-                                        New-UDTypography -Text "Enable Network adapter"
+                                        New-UDTypography -Text "Enable Network adapter $($EventData.Name)"
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon play) -size small -Onclick {
-                                            $AdapterName = $EventData.Name
                                             try {
-                                                Invoke-Command -ComputerName $Computer -Scriptblock {
-                                                    Param($AdapterName)
-                                                    Enable-NetAdapter -Name $AdapterName
-                                                } -ArgumentList $AdapterName
+                                                $CimSession = New-CimSession -ComputerName $Computer
+                                                Enable-NetAdapter -CimSession $CimSession -Name $EventData.Name
+                                                Remove-CimSession -InstanceId $CimSession.InstanceId
                                                 if ($ActiveEventLog -eq "True") {
                                                     Write-EventLog -LogName $EventLogName -Source "EnableNetworkAdapter" -EventID 10 -EntryType Information -Message "$($User) did enable network adapter for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                                 }
@@ -264,15 +252,13 @@ function Show-NetAdpBtn {
                                 }
 
                                 New-UDTooltip -TooltipContent {
-                                    New-UDTypography -Text "Restart network adapter"
+                                    New-UDTypography -Text "Restart network adapter $($EventData.Name)"
                                 } -content { 
                                     New-UDButton -Icon (New-UDIcon -Icon undo_alt) -size small -Onclick {
-                                        $AdapterName = $EventData.Name
                                         try {
-                                            Invoke-Command -ComputerName $Computer -Scriptblock {
-                                                Param($AdapterName)
-                                                Restart-NetAdapter -Name $AdapterName
-                                            } -ArgumentList $AdapterName
+                                            $CimSession = New-CimSession -ComputerName $Computer
+                                            Restart-NetAdapter -CimSession $CimSession -Name $EventData.Name
+                                            Remove-CimSession -InstanceId $CimSession.InstanceId
                                             if ($ActiveEventLog -eq "True") {
                                                 Write-EventLog -LogName $EventLogName -Source "RestartNetworkAdapter" -EventID 10 -EntryType Information -Message "$($User) did restart network adapter for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                             }
@@ -317,10 +303,7 @@ function Show-NetAdpBtn {
 function Show-ProcessTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Show processes on $($Computer)"
@@ -334,24 +317,15 @@ function Show-ProcessTableBtn {
                         }
                         
                         $Columns = @(
-                            New-UDTableColumn -Title 'Id' -Property 'ID' -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Title 'Name' -Property 'ProcessName' -IncludeInExport -IncludeInSearch -DefaultSortColumn
-                            New-UDTableColumn -Title 'User' -Property 'UserName' -IncludeInExport
-                            New-UDTableColumn -Title 'CPU' -Property 'CPU' -IncludeInExport
-                            New-UDTableColumn -Title 'RAM' -Property 'WorkingSet' -IncludeInExport -Render {
-                                $EventData.WorkingSet | ConvertTo-ByteString
-                            }
-                            New-UDTableColumn -Property Delete -Title "." -Render {
+                            New-UDTableColumn -Property " " -Title " " -Render {
                                 New-UDTooltip -TooltipContent {
-                                    New-UDTypography -Text "Stop process"
+                                    New-UDTypography -Text "Stop process $($EventData.ProcessName)"
                                 } -content { 
-                                    New-UDButton -Icon (New-UDIcon -Icon stop) -size small -Onclick {
+                                    #New-UDIconButton -Icon (New-UDIcon -Icon times_circle -Style @{ color = 'rgba(255, 0, 0, 0.6)' }) -Size small -Onclick {
+                                    New-UDButton -Icon (New-UDIcon -Icon times_circle) -size small -Onclick {
                                         $KillProcessID = $EventData.id
                                         try {
-                                            Invoke-Command -ComputerName $Computer -Scriptblock {
-                                                Param($KillProcessID)
-                                                Stop-Process -Id $KillProcessID -Force
-                                            } -ArgumentList $KillProcessID
+                                            Get-CimInstance -ClassName Win32_Process -ComputerName $Computer -Filter "ProcessId = '$($EventData.id)'" | Invoke-CimMethod -MethodName Terminate
                                             if ($ActiveEventLog -eq "True") {
                                                 Write-EventLog -LogName $EventLogName -Source "KillProcess" -EventID 10 -EntryType Information -Message "$($User) did kill process $($EventData.ProcessName) ID $($KillProcessID) for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                             }
@@ -359,14 +333,33 @@ function Show-ProcessTableBtn {
                                             Sync-UDElement -id 'ProcessStart'
                                         }
                                         catch {
-                                            Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                             Break
                                         }
                                     }
                                 }
-                            }    
+                            }
+                            New-UDTableColumn -Title 'Id' -Property 'ID' -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Title 'Name' -Property 'ProcessName' -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                            New-UDTableColumn -Title 'User' -Property 'UserName' -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Title 'RAM' -Property 'WorkingSetSize' -IncludeInExport -Render {
+                                $EventData.WorkingSetSize | ConvertTo-ByteString
+                            }
+                            New-UDTableColumn -Title 'Command Line' -Property 'CommandLine' -IncludeInExport -IncludeInSearch
                         )
-                        $Processes = Invoke-Command -ComputerName $Computer -Scriptblock { Get-Process -IncludeUserName | Select-Object @("Id", "ProcessName", "CPU", "WorkingSet", "UserName") }
+
+                        $CimSession = New-CimSession -ComputerName $Computer
+                        $Processes = Get-CimInstance -CimSession $CimSession -ClassName Win32_Process | ForEach-Object {
+                            [PSCustomObject]@{
+                                ProcessName    = $_.name
+                                ID             = $_.ProcessID
+                                WorkingSetSize = $_.WorkingSetSize
+                                UserName       = (Invoke-CimMethod -CimSession $CimSession -InputObject $_ -MethodName GetOwner | Select-Object User -ExpandProperty user)
+                                CommandLine    = $_.CommandLine
+                            }
+                        }
+                        Remove-CimSession -InstanceId $CimSession.InstanceId
+
                         if ([string]::IsNullOrEmpty($Processes)) {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
@@ -390,7 +383,7 @@ function Show-ProcessTableBtn {
                     Hide-UDModal
                 }
                                         
-            } -FullWidth -MaxWidth 'lg' -Persistent
+            } -Persistent
         }
     }
 }
@@ -707,10 +700,7 @@ function Remove-UserProfilesBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory)][string]$YourDomain,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$YourDomain
     )
 
     
@@ -720,99 +710,94 @@ function Remove-UserProfilesBtn {
                 if ($ActiveEventLog -eq "True") {
                     Write-EventLog -LogName $EventLogName -Source "ShowComputerUserProfiles" -EventID 10 -EntryType Information -Message "$($User) has been looking at $($Computer) user profiles`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                 }
-                $Profiles = Get-WMIObject -ComputerName $Computer -class Win32_UserProfile | Where-Object { (!$_.Special) -and ($_.LocalPath -ne 'C:\Users\Administrator') -and ($_.LocalPath -ne 'C:\Users\Administratör') }
-
-                $SearchComputerGroupData = foreach ($Profile in $Profiles) {
-                    $SID = $Profile.SID
-                    $ProfileInfo = Invoke-Command -ComputerName $Computer { Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$using:SID" }
-    
-                    If ($null -ne $ProfileInfo.LocalProfileUnloadTimeHigh) {
-                        $PUHigh = '{0:x}' -f $ProfileInfo.LocalProfileUnloadTimeHigh
-                        $PULow = '{0:x}' -f $ProfileInfo.LocalProfileUnloadTimeLow
-                        $PUcomb = -join ('0x', $PUHigh, $PULow)
-                        $ProfileUsed = [datetime]::FromFileTime([uint64]$PUcomb)                    
- 
-                        $ProfileAge = (New-TimeSpan -Start $ProfileUsed).Days #$ts.Days
-
-                        if ($ProfileAge -ge 3000) {
-                            $ProfileUsed = "N/A"
-                            $ProfileAge = "N/A"
+                $ExcludedProfiles = @("C:\Users\Administrator", "C:\Users\Administratör")
+                $SearchComputerGroupData = Get-CimInstance -ComputerName $Computer -className Win32_UserProfile | Where-Object { (-Not ($_.Special)) } | Foreach-Object {
+                    if (-Not ($_.LocalPath -in $ExcludedProfiles)) {
+                        [PSCustomObject]@{
+                            ProfileUserName = $_.LocalPath.split('\')[-1]
+                            ProfilePath     = $_.LocalPath
+                            LastUsed        = ($_.LastUseTime -as [DateTime]).ToString("yyyy-MM-dd HH:mm")
+                            ProfileLoaded   = $_.Loaded
                         }
-                    }
-                    Else {
-                        $ProfileUsed = "N/A"
-                        $ProfileAge = "N/A"
-                    }
- 
-                    try {
-                        $ProfileUser = (New-Object System.Security.Principal.SecurityIdentifier ($Profile.SID)).Translate( [System.Security.Principal.NTAccount]).Value
-                    }
-                    catch {
-                        $ProfileUser = $Profile.LocalPath
-                    }
-                    $ConProfileUsed = $ProfileUsed -as [datetime]
-
-                    [PSCustomObject]@{
-                        User          = $ProfileUser
-                        ProfilePath   = $Profile.LocalPath
-                        LastUsed      = $ConProfileUsed
-                        ProfileAge    = "$($ProfileAge) days"
-                        ProfileLoaded = $Profile.Loaded
                     }
                 }
+
                 $SearchComputerGroupColumns = @(
-                    New-UDTableColumn -Property User -Title "User" -IncludeInExport -IncludeInSearch -DefaultSortColumn
+                    New-UDTableColumn -Property ProfileUserName -Title "User" -IncludeInExport -IncludeInSearch -DefaultSortColumn
                     New-UDTableColumn -Property ProfilePath -Title "Search path" -IncludeInExport -IncludeInSearch
-                    New-UDTableColumn -Property LastUsed -Title "Last Used" -IncludeInExport -IncludeInSearch -Render {
-                        if ([string]::IsNullOrEmpty($EventData.LastUsed)) {
-                            "N/A"
+                    New-UDTableColumn -Property LastUsed -Title "Last Used" -IncludeInExport -IncludeInSearch
+                    New-UDTableColumn -Property NotUsedFor -Title "Not used for" -IncludeInExport -IncludeInSearch -Render {
+                        if (-Not([string]::IsNullOrEmpty($Eventdata.LastUsed))) {
+                            $Age = NEW-TIMESPAN -Start $Eventdata.LastUsed -End (Get-Date) | Select-Object days, hours, Minutes  | Foreach-Object {
+                                [PSCustomObject]@{
+                                    Ndays    = if ($Null -eq $_.Days -or $_.Days -eq "0") { $Null } else { "$($_.Days) days " }
+                                    NHours   = if ($Null -eq $_.Hours -or $_.Hours -eq "0") { $Null } else { "$($_.Hours) hours " }
+                                    NMinutes = if ($Null -eq $_.Minutes -or $_.Minutes -eq "0") { $Null } else { "$($_.Minutes) min" }
+                                }
+                            }
+                            "$($Age.Ndays)$($Age.NHours)$($Age.NMinutes)"
                         }
                         else {
-                            $LastUsedDate = $EventData.LastUsed -as [datetime]
-                            "$($LastUsedDate)"
+                            $Null
                         }
                     }
-                    New-UDTableColumn -Property ProfileAge -Title "Profile age" -IncludeInExport -IncludeInSearch
-                    New-UDTableColumn -Property ProfileLoaded -Title "Loaded?"
-                    New-UDTableColumn -Property Delete -Title "." -Render {
+                    New-UDTableColumn -Property ProfileLoaded -Title "In use?" -Render {
+                        Switch ($EventData.ProfileLoaded) {
+                            False {
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "The profile for $($EventData.ProfileUserName) are not in use and can be deleted!"
+                                } -content { 
+                                    New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                }
+                            }
+                            True {
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "The profile for $($EventData.ProfileUserName) are in use and can't be deleted!"
+                                } -content { 
+                                    New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                }
+                            }
+                            Default {
+                                $EventData.Enabled
+                            }
+                        }
+                    }
+                    New-UDTableColumn -Property Delete -Title " " -Render {
                         New-UDTooltip -TooltipContent {
-                            New-UDTypography -Text "Delete the user profile"
+                            New-UDTypography -Text "Delete the user profile for $($EventData.ProfileUserName)"
                         } -content { 
-                            New-UDButton -Icon (New-UDIcon -Icon backspace) -size small -Onclick {
+                            New-UDButton -Icon (New-UDIcon -Icon trash_alt -Style @{ color = 'rgba(0, 151, 207, 0.6)' }) -Size small -Onclick {
                                 if ($EventData.ProfileLoaded -eq "True") {
-                                    Show-UDToast -Message "You can't delete a profile that are loaded!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                    Show-UDToast -Message "The profile for $($EventData.ProfileUserName) are in use and can't be deleted!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                 }
                                 else {
-                                    $UserRmProfileName = $EventData.User.Replace("$($YourDomain)\", "")
                                     try {
-                                        $Btns = @("CloseBtn", "SelectedBtn", "RefreshBtn")
+                                        Show-UDToast -Message "Deleting of the profile for $($EventData.ProfileUserName) has started, please wait..." -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                        $Btns = @("CloseBtn", "SelectedBtn")
                                         foreach ($btn in $btns) {
                                             Set-UDElement -Id $btn -Properties @{
                                                 disabled = $true 
-                                                text     = "Deleting..."
                                             }
                                         }
-                                        Get-WmiObject -ComputerName $Computer Win32_UserProfile | Where-Object { $_.LocalPath -eq "C:\Users\$($UserRmProfileName)" } | Remove-WmiObject
+                                        Get-CimInstance -ComputerName $Computer Win32_UserProfile | Where-Object { $_.LocalPath -eq "C:\Users\$($EventData.ProfileUserName)" } | Remove-CimInstance
                                         if ($ActiveEventLog -eq "True") {
                                             Write-EventLog -LogName $EventLogName -Source "DeletedUserProfile" -EventID 10 -EntryType Information -Message "$($User) did delete $($UserRmProfileName) user profile from $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                                         }
-                                        Show-UDToast -Message "The profile for $($UserRmProfileName) has been deleted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                        Set-UDElement -Id "CloseBtn" -Properties @{
-                                            disabled = $false
-                                            text     = "Close"
-                                        }
-                                        Set-UDElement -Id "RefreshBtn" -Properties @{
-                                            disabled = $false
-                                            text     = "Refresh"
-                                        }
-                                        Set-UDElement -Id "SelectedBtn" -Properties @{
-                                            disabled = $false 
-                                            text     = "Delete selected"
+                                        Show-UDToast -Message "The profile for $($EventData.ProfileUserName) has been deleted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                        foreach ($btn in $btns) {
+                                            Set-UDElement -Id $btn -Properties @{
+                                                disabled = $false
+                                            }
                                         }
                                         Sync-UDElement -id 'ShowUsrProfdata'
                                     }
                                     catch {
-                                        Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                        foreach ($btn in $btns) {
+                                            Set-UDElement -Id $btn -Properties @{
+                                                disabled = $false
+                                            }
+                                        }
+                                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                         Sync-UDElement -id 'ShowUsrProfdata'
                                         Break
                                     }
@@ -854,27 +839,31 @@ function Remove-UserProfilesBtn {
                                                 }
                                             } ) )
                                     Show-UDToast -Message "The profiles for $($ComputerSearchLog -join ",") has been deleted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                    Set-UDElement -Id "CloseBtn" -Properties @{
-                                        disabled = $false
-                                        text     = "Close"
-                                    }
-                                    Set-UDElement -Id "RefreshBtn" -Properties @{
-                                        disabled = $false
-                                        text     = "Refresh"
-                                    }
-                                    Set-UDElement -Id "SelectedBtn" -Properties @{
-                                        disabled = $false 
-                                        text     = "Delete selected"
+                                    foreach ($btn in $btns) {
+                                        Set-UDElement -Id $btn -Properties @{
+                                            disabled = $false
+                                        }
                                     }
                                     Sync-UDElement -id 'ShowUsrProfdata'
                                 }
                                 catch {
                                     Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                    foreach ($btn in $btns) {
+                                        Set-UDElement -Id $btn -Properties @{
+                                            disabled = $false
+                                        }
+                                    }
+                                    Sync-UDElement -id 'ShowUsrProfdata'
                                     Break
                                 }
                             }
                             else {
                                 Show-UDToast -Message "You have not selected any profile!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                foreach ($btn in $btns) {
+                                    Set-UDElement -Id $btn -Properties @{
+                                        disabled = $false
+                                    }
+                                }
                                 Break
                             }
                         } -id "SelectedBtn"
@@ -1052,10 +1041,7 @@ Function Compare-ComputerGrpsBtn {
 function Show-SchedualTaskTableBtn {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
     New-UDTooltip -TooltipContent {
@@ -1065,9 +1051,6 @@ function Show-SchedualTaskTableBtn {
             Show-UDModal -Header { "Schedual Tasks on $($Computer)" } -Content {
                 New-UDDynamic -Id 'Schedual' -content {
                     New-UDGrid -Spacing '1' -Container -Children {
-                        if ($ActiveEventLog -eq "True") {
-                            Write-EventLog -LogName $EventLogName -Source "ShowSchedualTask" -EventID 10 -EntryType Information -Message "$($User) did look at SchedualTask for $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                        }
 
                         $Columns = @(
                             New-UDTableColumn -Title '.' -Property '.' -Render {
@@ -1078,11 +1061,10 @@ function Show-SchedualTaskTableBtn {
                                         } -content { 
                                             New-UDButton -Icon (New-UDIcon -Icon play) -size small -OnClick {
                                                 try {
-                                                    Enable-ScheduledTask -TaskName $EventData.TaskName
+                                                    $CimSession = New-CimSession -ComputerName $Computer
+                                                    Enable-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
+                                                    Remove-CimSession -InstanceId $CimSession.InstanceId
                                                     Sync-UDElement -id "Schedual"
-                                                    if ($ActiveEventLog -eq "True") {
-                                                        Write-EventLog -LogName $EventLogName -Source "EnableSchedualTask" -EventID 10 -EntryType Information -Message "$($User) did enable $($EventData.TaskName) on $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                                    }
                                                 }
                                                 catch {
                                                     Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
@@ -1097,11 +1079,10 @@ function Show-SchedualTaskTableBtn {
                                         } -content { 
                                             New-UDButton -Icon (New-UDIcon -Icon stop) -size small -OnClick {
                                                 try {
-                                                    Disable-ScheduledTask -TaskName $EventData.TaskName
+                                                    $CimSession = New-CimSession -ComputerName $Computer
+                                                    Disable-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
+                                                    Remove-CimSession -InstanceId $CimSession.InstanceId
                                                     Sync-UDElement -id "Schedual"
-                                                    if ($ActiveEventLog -eq "True") {
-                                                        Write-EventLog -LogName $EventLogName -Source "DisableSchedualTask" -EventID 10 -EntryType Information -Message "$($User) did disable $($EventData.TaskName) on $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                                    }
                                                 }
                                                 catch {
                                                     Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
@@ -1115,11 +1096,10 @@ function Show-SchedualTaskTableBtn {
                                     } -content { 
                                         New-UDButton -Icon (New-UDIcon -Icon play_circle) -size small -OnClick {
                                             try {
-                                                Start-ScheduledTask -TaskName $EventData.TaskName
+                                                $CimSession = New-CimSession -ComputerName $Computer
+                                                Start-ScheduledTask -CimSession $CimSession -TaskName $EventData.TaskName
+                                                Remove-CimSession -InstanceId $CimSession.InstanceId
                                                 Sync-UDElement -id "Schedual"
-                                                if ($ActiveEventLog -eq "True") {
-                                                    Write-EventLog -LogName $EventLogName -Source "RunSchedualTask" -EventID 10 -EntryType Information -Message "$($User) did run $($EventData.TaskName) on $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                                }
                                             }
                                             catch {
                                                 Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
@@ -1133,8 +1113,10 @@ function Show-SchedualTaskTableBtn {
                             New-UDTableColumn -Title 'Task Name' -Property 'TaskName' -IncludeInExport -IncludeInSearch -DefaultSortColumn
                             New-UDTableColumn -Title 'Description' -Property 'Description' -IncludeInExport -IncludeInSearch
                         )
-                        $Scheduals = Invoke-Command -ComputerName $Computer -ScriptBlock { Get-ScheduledTask -taskpath "\" | select-object State, TaskName, Description }
-                        if ([string]::IsNullOrEmpty($Scheduals)) {
+                        $CimSession = New-CimSession -ComputerName $Computer
+                        $Schedules = Get-ScheduledTask -CimSession $CimSession -TaskPath "\" | select-object State, TaskName, Description
+                        Remove-CimSession -InstanceId $CimSession.InstanceId
+                        if ([string]::IsNullOrEmpty($Schedules )) {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDAlert -Severity 'error' -Text "Could not establish a connection to $($Computer)"
                             }
@@ -1142,7 +1124,7 @@ function Show-SchedualTaskTableBtn {
                         else {
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 $SearchOption = New-UDTableTextOption -Search "Search"
-                                New-UDTable -Columns $Columns -Data $Scheduals -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
+                                New-UDTable -Columns $Columns -Data $Schedules  -DefaultSortDirection "Ascending" -Sort -TextOption $SearchOption -ShowSearch -ShowPagination -Dense -Export -ExportOption "xlsx, PDF, CSV" -PageSize 50
                             }
                         }
                     }
@@ -1150,7 +1132,7 @@ function Show-SchedualTaskTableBtn {
                     New-UDProgress -Circular
                 }
             } -Footer {
-                New-UDButton -Text "Refresh" -OnClick { 
+                New-UDButton -Text "Refresh list" -OnClick { 
                     Sync-UDElement -id 'Schedual'
                 }
                 New-UDButton -Text "Close" -OnClick {
@@ -1165,32 +1147,32 @@ function Show-SchedualTaskTableBtn {
 Function Restart-ADComputer {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
-
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Reboot $($Computer)"
     } -content { 
         New-UDButton -Icon (New-UDIcon -Icon power_off) -size medium -Onclick {
             Show-UDModal -Header { "Reboot $($Computer)" } -Content {
                 New-UDGrid -Spacing '1' -Container -Children {
-                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
-                    New-UDGrid -Item -ExtraLargeSize 10 -LargeSize 10 -MediumSize 10 -SmallSize 10 -Children {
-                        New-UDTypography -Text "Are you sure that you want to reboot $($Computer)?"
+                    New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                        New-UDTypography -Text "Are you sure that you want to reboot $($Computer)?" -Align center
                     }
-                    New-UDGrid -Item -ExtraLargeSize 1 -LargeSize 1 -MediumSize 1 -SmallSize 1 -Children { }
                 }
             } -Footer {
                 New-UDButton -Text "Yes" -OnClick { 
-                    Show-UDToast -Message "$($Computer) has now been rebooted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                    Invoke-Command -ComputerName $Computer -ScriptBlock { Restart-Computer -Force }
-                    if ($ActiveEventLog -eq "True") {
-                        Write-EventLog -LogName $EventLogName -Source "RebootComputer" -EventID 10 -EntryType Information -Message "$($User) did reboot $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                    try {
+                        Restart-Computer -ComputerName $Computer -Force
+                        Show-UDToast -Message "$($Computer) has now been rebooted!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                        if ($ActiveEventLog -eq "True") {
+                            Write-EventLog -LogName $EventLogName -Source "RebootComputer" -EventID 10 -EntryType Information -Message "$($User) did reboot $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                        }
+                        Hide-UDModal
                     }
-                    Hide-UDModal
+                    catch {
+                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                        Break
+                    }
                 }
                 New-UDButton -Text "No" -OnClick {
                     Hide-UDModal
@@ -1203,31 +1185,35 @@ Function Restart-ADComputer {
 Function Disconnect-UserFromComputer {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][bool]$ActiveEventLog,
         [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$EventLogName,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$CurrentLoggedInUser
     )
 
-    Show-UDModal -Header { "Logout user from $($Computer)" } -Content {
+    Show-UDModal -Header { "Logout $($CurrentLoggedInUser) from $($Computer)" } -Content {
         New-UDGrid -Spacing '1' -Container -Children {
             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                New-UDTypography -Text "Are you sure that you want to logout the user from $($Computer)?"
+                New-UDTypography -Text "Are you sure that you want to logout $($CurrentLoggedInUser) from $($Computer)?" -Align center
             }
         }
     } -Footer {
         New-UDButton -Text "Yes" -OnClick { 
-            Show-UDToast -Message "$($SystInfo.Computer.UserName) has been logged out from $($Computer)" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-            Hide-UDModal
-            Invoke-CimMethod -ClassName Win32_Operatingsystem -ComputerName $Computer -MethodName Win32Shutdown -Arguments @{ Flags = 0 }
-            if ($ActiveEventLog -eq "True") {
-                Write-EventLog -LogName $EventLogName -Source "LogOutUser" -EventID 10 -EntryType Information -Message "$($User) did logout $($SystInfo.Computer.UserName) from $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+            try {
+                Invoke-CimMethod -ClassName Win32_Operatingsystem -ComputerName $Computer -MethodName Win32Shutdown -Arguments @{ Flags = 0 }
+                Show-UDToast -Message "$($SystInfo.Computer.UserName) has been logged out from $($Computer)" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                if ($ActiveEventLog -eq "True") {
+                    Write-EventLog -LogName $EventLogName -Source "LogOutUser" -EventID 10 -EntryType Information -Message "$($User) did logout $($SystInfo.Computer.UserName) from $($Computer)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                }
+                Hide-UDModal
+            }
+            catch {
+                Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                Break
             }
         }
-        New-UDButton -Text "No" -OnClick { Hide-UDModal }
-    } -FullWidth -MaxWidth 'xs' -Persistent
+        New-UDButton -Text "No" -OnClick {
+            Hide-UDModal
+        }
+    } -MaxWidth 'xs' -Persistent
 }
 
 function Remove-TempFilesClientBtn {
@@ -1382,10 +1368,7 @@ function Remove-TempFilesClientBtn {
 Function Ping-ADComputer {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Send ping to $($Computer)"
@@ -1395,13 +1378,40 @@ Function Ping-ADComputer {
                 New-UDGrid -Spacing '1' -Container -Children {
                     New-UDDynamic -Id 'Ping' -content {
                         $PingColumns = @(
-                            New-UDTableColumn -Property PingSucceeded  -Title "Ping Success" -IncludeInExport -IncludeInSearch -DefaultSortColumn
-                            New-UDTableColumn -Property NameResolutionSucceeded  -Title "NS Success" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property TcpTestSucceeded  -Title "TCP Test Success" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property RemoteAddress  -Title "Remote Address" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property InterfaceAlias  -Title "Interface Alias" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property InterfaceDescription  -Title "Interface Description" -IncludeInExport -IncludeInSearch
-                            New-UDTableColumn -Property ResolvedAddresses  -Title "Resolved Addresses" -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Property PingSucceeded -Title "Ping Success" -IncludeInExport -DefaultSortColumn -Render {
+                                switch ($Eventdata.PingSucceeded) {
+                                    True {
+                                        New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                    }
+                                    False {
+                                        New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                    }
+                                }
+                            }
+                            New-UDTableColumn -Property NameResolutionSucceeded -Title "NS Success" -IncludeInExport -IncludeInSearch -Render {
+                                switch ($Eventdata.NameResolutionSucceeded) {
+                                    True {
+                                        New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                    }
+                                    False {
+                                        New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                    }
+                                }
+                            }
+                            New-UDTableColumn -Property TcpTestSucceeded -Title "TCP Test Success" -IncludeInExport -IncludeInSearch -Render {
+                                switch ($Eventdata.TcpTestSucceeded) {
+                                    True {
+                                        New-UDIcon -Icon 'check' -Size lg -Style @{color = 'rgba(80, 184, 72, 0.6)' }
+                                    }
+                                    False {
+                                        New-UDIcon -Icon 'times' -Size lg -Style @{color = 'rgba(255, 0, 0, 0.6)' }
+                                    }
+                                }
+                            }
+                            New-UDTableColumn -Property RemoteAddress -Title "Remote Address" -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Property InterfaceAlias -Title "Interface Alias" -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Property InterfaceDescription -Title "Interface Description" -IncludeInExport -IncludeInSearch
+                            New-UDTableColumn -Property ResolvedAddresses -Title "Resolved Addresses" -IncludeInExport -IncludeInSearch
                         )
 
                         $PingResults = Test-NetConnection -ComputerName $Computer -InformationLevel "Detailed" | Foreach-Object {
@@ -1443,33 +1453,22 @@ Function Ping-ADComputer {
                     foreach ($btn in $Btns) {
                         Set-UDElement -Id "$($btn)" -Properties @{
                             disabled = $true 
-                            text     = "Pinging..."
                         }
                     }
                     try {
-                        
                         Sync-UDElement -Id "Ping"
-                        
-                        Set-UDElement -Id 'CloseBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Close"
-                        }
-                        Set-UDElement -Id 'PingBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Ping"
+                        foreach ($btn in $Btns) {
+                            Set-UDElement -Id "$($btn)" -Properties @{
+                                disabled = $false 
+                            }
                         }
                     }
                     catch {
-                        Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
- 
-                        Set-UDElement -Id 'CloseBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Close"
-                        }
-
-                        Set-UDElement -Id 'PingBtn' -Properties @{
-                            disabled = $false 
-                            text     = "Ping"
+                        Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                        foreach ($btn in $Btns) {
+                            Set-UDElement -Id "$($btn)" -Properties @{
+                                disabled = $false 
+                            }
                         }
                         Break
                     }
@@ -1486,29 +1485,30 @@ Function Ping-ADComputer {
 Function Remove-EdgeSettings {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
 
-    Show-UDModal -Header { "Delete Edge settings on $($Computer)" } -Content {
-        $Profiles = Get-WmiObject -ClassName Win32_UserProfile -ComputerName $Computer | Select-Object localpath | where-object { $_.LocalPath -like "C:\Users\*" } | ForEach-Object { $_.localpath.Replace("C:\Users\", "") }
-        New-UDGrid -Spacing '1' -Container -Children {
-            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                New-UDHTML -Markup "The users bookmarks will be restored after the settings has been deleted. Just incase, a backup of the bookmarks will be stored in C:\Temp"
-            }
-            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { }
-            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
-                New-UDSelect -Id 'EdgeUser' -Option {
-                    New-UDSelectOption -Name 'Select user...' -Value 1
-                    foreach ($user in $profiles) {
-                        New-UDSelectOption -Name $user -Value $user
-                    }
+    Show-UDModal -Header { "Delete Microsoft Edge settings on $($Computer) for a user" } -Content {
+        New-UDDynamic -Id 'Edge' -content {
+            $Profiles = Get-CimInstance -ComputerName $Computer -className Win32_UserProfile | Where-Object { (!$_.Special) -and ($_.LocalPath -ne 'C:\Users\Administrator') -and ($_.LocalPath -ne 'C:\Users\Administratör') } | ForEach-Object { $_.LocalPath.split('\')[-1] }
+            New-UDGrid -Spacing '1' -Container -Children {
+                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                    New-UDTypography -Text "The users bookmarks will be restored after the settings has been deleted." -Align Center
                 }
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
+                New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
+                    New-UDSelect -Id 'EdgeUser' -FullWidth -Option {
+                        New-UDSelectOption -Name 'Select user...' -Value 1
+                        foreach ($user in $profiles) {
+                            New-UDSelectOption -Name $user -Value $user
+                        }
+                    } -DefaultValue 1
+                }
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
             }
-            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
+        } -LoadingComponent {
+            New-UDProgress -Circular
         }
     } -Footer {
         New-UDButton -Text "Delete" -OnClick { 
@@ -1520,28 +1520,24 @@ Function Remove-EdgeSettings {
             }
             else {
                 try {
-                    Set-UDElement -Id "EdgeUser" -Properties @{
-                        Disabled = $true
+                    $Btns = @("EdgeUser", "DeleteBtn", "CloseBtn")
+
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $true 
+                        }
                     }
-                    Set-UDElement -Id "DeleteBtn" -Properties @{
-                        Text     = "Deleting..."
-                        Disabled = $true
+                    $CimSession = New-CimSession -ComputerName $Computer
+                    $MSEdgeProcess = Get-CimInstance -CimSession $CimSession -Class Win32_Process -Property Name | where-object { $_.name -eq "msedge.exe" }
+                    if ($Null -ne $MSEdgeProcess) {
+                        [void]($MSEdgeProcess | Invoke-CimMethod -MethodName Terminate)
                     }
-                           
-                    Set-UDElement -Id "CloseBtn" -Properties @{
-                        Text     = "Deleting..."
-                        Disabled = $true
-                    }
+                    Remove-CimSession -InstanceId $CimSession.InstanceId
                     Invoke-Command -ComputerName $Computer -Scriptblock {
                         Param($UserToClean)
-                        $edgestatus = $(try { Get-Process -Name msedge -ErrorAction stop } catch { $Null })
                         $msedgepath = "C:\Users\$($UserToClean)\AppData\Local\Microsoft\Edge\User Data\"
                         $msedgebookmark = "C:\Users\$($UserToClean)\AppData\Local\Microsoft\Edge\User Data\Default\Bookmarks"
                         $MSEdgeBookmarkFolderPath = "C:\Users\$($UserToClean)\AppData\Local\Microsoft\Edge\User Data\Default\"
-
-                        if ($Null -ne $edgestatus) {
-                            Stop-Process -Name msedge -Force
-                        }
 
                         if (Test-Path -Path $msedgebookmark -PathType Leaf) {
                             if (Test-Path -Path "C:\Temp") {
@@ -1556,32 +1552,33 @@ Function Remove-EdgeSettings {
                         if (Test-Path -Path $msedgepath) {
                             Remove-Item $msedgepath -Recurse -Force
                         }
-                        New-Item -ItemType Directory -Force -Path $MSEdgeBookmarkFolderPath
-                        Copy-Item "C:\Temp\Bookmarks" -Destination $MSEdgeBookmarkFolderPath
-
+                        if (Test-Path -Path "C:\Temp\Bookmarks"-PathType Leaf) {
+                            New-Item -ItemType Directory -Force -Path $MSEdgeBookmarkFolderPath
+                            Copy-Item "C:\Temp\Bookmarks" -Destination $MSEdgeBookmarkFolderPath
+                            Remove-Item "C:\Temp\Bookmarks" -Recurse -Force
+                        }
                     } -ArgumentList $UserToClean
 
                     Show-UDToast -Message "Edge settings for $($UserToClean) on $($Computer) has now been deleted! And the bookmarks has been restored!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                     if ($ActiveEventLog -eq "True") {
                         Write-EventLog -LogName $EventLogName -Source "DeleteEdgeSettings" -EventID 10 -EntryType Information -Message "$($User) deleted Edge settings on $($Computer) for $($UserToClean)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                     }
-                    Hide-UDModal
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $false 
+                        }
+                    }
+                    Sync-UDElement -Id "Edge"
                 }
                 catch {
-                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $false 
+                        }
+                    }
+                    Sync-UDElement -Id "Edge"
                     Break
-                    Set-UDElement -Id "EdgeUser" -Properties @{
-                        Disabled = $false
-                    }
-                    Set-UDElement -Id "DeleteBtn" -Properties @{
-                        Text     = "Delete"
-                        Disabled = $false
-                    }
-                           
-                    Set-UDElement -Id "CloseBtn" -Properties @{
-                        Text     = "Close"
-                        Disabled = $false
-                    }
                 }
             }
         } -Id "DeleteBtn"
@@ -1594,28 +1591,29 @@ Function Remove-EdgeSettings {
 Function Remove-ChromeSettings {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$Computer,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$Computer
     )
 
-    Show-UDModal -Header { "Delete Chrome settings on $($Computer)" } -Content {
-        $Profiles = Get-WmiObject -ClassName Win32_UserProfile -ComputerName $Computer | Select-Object localpath | where-object { $_.LocalPath -like "C:\Users\*" } | ForEach-Object { $_.localpath.Replace("C:\Users\", "") }
-        New-UDGrid -Spacing '1' -Container -Children {
-            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                New-UDHTML -Markup "The users bookmarks will be restored after the settings has been deleted. Just incase, a backup of the bookmarks will be stored in C:\Temp"
-            }
-            New-UDGrid -Item -ExtraLargeSize 5 -LargeSize 5 -MediumSize 5 -SmallSize 5 -Children { }
-            New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
-                New-UDSelect -Id 'ChromeUser' -Option {
-                    New-UDSelectOption -Name 'Select user...' -Value 1
-                    foreach ($user in $profiles) {
-                        New-UDSelectOption -Name $user -Value $user
-                    }
+    Show-UDModal -Header { "Delete Google Chrome settings on $($Computer) for a user" } -Content {
+        New-UDDynamic -Id 'Chrome' -content {
+            $Profiles = Get-CimInstance -ComputerName $Computer -className Win32_UserProfile | Where-Object { (!$_.Special) -and ($_.LocalPath -ne 'C:\Users\Administrator') -and ($_.LocalPath -ne 'C:\Users\Administratör') } | ForEach-Object { $_.LocalPath.split('\')[-1] }
+            New-UDGrid -Spacing '1' -Container -Children {
+                New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
+                    New-UDTypography -Text "The users bookmarks will be restored after the settings has been deleted." -Align Center
                 }
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
+                New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
+                    New-UDSelect -Id 'ChromeUser' -FullWidth -Option {
+                        New-UDSelectOption -Name 'Select user...' -Value 1
+                        foreach ($user in $profiles) {
+                            New-UDSelectOption -Name $user -Value $user
+                        }
+                    } -DefaultValue 1
+                }
+                New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
             }
-            New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children { }
+        } -LoadingComponent {
+            New-UDProgress -Circular
         }
     } -Footer {
         New-UDButton -Text "Delete" -OnClick { 
@@ -1627,28 +1625,25 @@ Function Remove-ChromeSettings {
             }
             else {
                 try {
-                    Set-UDElement -Id "ChromeUser" -Properties @{
-                        Disabled = $true
+                    $Btns = @("ChromeUser", "DeleteBtn", "CloseBtn")
+
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $true 
+                        }
                     }
-                    Set-UDElement -Id "DeleteBtn" -Properties @{
-                        Text     = "Deleting..."
-                        Disabled = $true
+                    $CimSession = New-CimSession -ComputerName $Computer
+                    $ChromeProcess = Get-CimInstance -CimSession $CimSession -Class Win32_Process -Property Name | where-object { $_.name -eq "chrome.exe" }
+                    if ($Null -ne $ChromeProcess) {
+                        [void]($ChromeProcess | Invoke-CimMethod -MethodName Terminate)
                     }
-                           
-                    Set-UDElement -Id "CloseBtn" -Properties @{
-                        Text     = "Deleting..."
-                        Disabled = $true
-                    }
+                    Remove-CimSession -InstanceId $CimSession.InstanceId
+
                     Invoke-Command -ComputerName $Computer -Scriptblock {
                         Param($UserToClean)
-                        $Chromestatus = $(try { Get-Process -Name chrome -ErrorAction stop } catch { $Null })
                         $chromepath = "C:\Users\$($UserToClean)\AppData\Local\Google\Chrome\User Data\"
                         $chromebookmark = "C:\Users\$($UserToClean)\AppData\Local\Google\Chrome\User Data\Default\Bookmarks"
                         $ChromeBookmarkFolderPath = "C:\Users\$($UserToClean)\AppData\Local\Google\Chrome\User Data\Default\"
-
-                        if ($Null -ne $Chromestatus) {
-                            Stop-Process -Name chrome -Force
-                        }
 
                         if (Test-Path -Path $chromebookmark -PathType Leaf) {
                             if (Test-Path -Path "C:\Temp") {
@@ -1663,31 +1658,33 @@ Function Remove-ChromeSettings {
                         if (Test-Path -Path $chromepath) {
                             Remove-Item $chromepath -Recurse -Force
                         }
-                        New-Item -ItemType Directory -Force -Path $ChromeBookmarkFolderPath
-                        Copy-Item "C:\Temp\Bookmarks" -Destination $ChromeBookmarkFolderPath
+                        if (Test-Path -Path "C:\Temp\Bookmarks"-PathType Leaf) {
+                            New-Item -ItemType Directory -Force -Path $ChromeBookmarkFolderPath
+                            Copy-Item "C:\Temp\Bookmarks" -Destination $ChromeBookmarkFolderPath
+                            Remove-Item "C:\Temp\Bookmarks" -Recurse -Force
+                        }
                     } -ArgumentList $UserToClean
 
                     Show-UDToast -Message "Chrome settings for $($UserToClean) on $($Computer) has now been deleted! And the bookmarks has been restored!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                     if ($ActiveEventLog -eq "True") {
                         Write-EventLog -LogName $EventLogName -Source "DeleteChromeSettings" -EventID 10 -EntryType Information -Message "$($User) deleted Chrome settings on $($Computer) for $($UserToClean)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
                     }
-                    Hide-UDModal
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $false
+                        }
+                    }
+                    Sync-UDElement -id "Chrome"
                 }
                 catch {
-                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                    Show-UDToast -Message "$($PSItem.Exception.Message)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                    foreach ($btn in $Btns) {
+                        Set-UDElement -Id "$($btn)" -Properties @{
+                            disabled = $false
+                        }
+                    }
+                    Sync-UDElement -id "Chrome"
                     Break
-                    Set-UDElement -Id "ChromeUser" -Properties @{
-                        Disabled = $false
-                    }
-                    Set-UDElement -Id "DeleteBtn" -Properties @{
-                        Text     = "Delete"
-                        Disabled = $false
-                    }
-                           
-                    Set-UDElement -Id "CloseBtn" -Properties @{
-                        Text     = "Close"
-                        Disabled = $false
-                    }
                 }
             }
         } -Id "DeleteBtn"
