@@ -45,7 +45,7 @@ Invoke-Command -ComputerName $CleanComputer -Scriptblock {
         } 
     }
 
-    write-host "disabeling wuauserv..."
+    write-host "disabling wuauserv..."
     Stop-Service -Name 'wuauserv'
     do {
         Write-Host 'Waiting for wuauserv to stop...'

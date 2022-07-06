@@ -24,10 +24,10 @@ Set-PSUAuthenticationMethod -ScriptBlock {
     $Result = [Security.AuthenticationResult]::new()
 
     # Write your domain here for example; "LDAP://DC=Franky,DC=com"
-    $AuthDomain = ""
+    $AuthDomain = "LDAP://DC=PSU,DC=KeepCodeOpen,DC=com"
 
     # Write the SID of the Franky.Access group in the variable below.
-    $FrankyAccessSID = ""
+    $FrankyAccessSID = "S-1-5-21-859619582-2349914427-3885431000-1107"
     
     $domain = New-Object System.DirectoryServices.DirectoryEntry($AuthDomain, ($Credential.UserName), $Credential.GetNetworkCredential().password)
     
@@ -40,7 +40,6 @@ Set-PSUAuthenticationMethod -ScriptBlock {
         write-host "Successfully authenticated with domain $($domain.name)"
         $Result.UserName = ($Credential.UserName)
         $winident = [System.Security.Principal.WindowsIdentity]::new($domain.UserName)
-        #Replace xxx below with the ID for your group that can access PSU
         if ($winident.HasClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid", "$($FrankyAccessSID)")) {
             $Result.Success = $true
                 

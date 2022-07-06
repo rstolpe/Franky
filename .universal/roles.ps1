@@ -18,7 +18,7 @@
 
 # In $Searcher.Filter you need to write the hole path to the OU like; CN=PSU.Execute,OU=Groups,DC=Franky,DC=com
 # Enter your Domain LDAP adress here like LDAP://DC=Franky,DC=COM
-$RoleDomain = ""
+$RoleDomain = "LDAP://DC=PSU,DC=KeepCodeOpen,DC=com"
 
 New-PSURole -Name "Reader" -Description "Readers have read-only access to UA. They cannot make changes to any entity within the system." -Policy {
     param(
@@ -33,7 +33,7 @@ New-PSURole -Name "Reader" -Description "Readers have read-only access to UA. Th
 
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky.Reader,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
@@ -58,7 +58,7 @@ New-PSURole -Name "Execute" -Description "Execute scripts within Universal Autom
         
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky.Execute,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
@@ -83,7 +83,7 @@ New-PSURole -Name "Administrator" -Description "Administrators can manage settin
         
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky.Administrator,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
@@ -108,7 +108,7 @@ New-PSURole -Name "Operator" -Description "Operators have access to manage and e
         
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky.Operator,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
@@ -133,7 +133,7 @@ New-PSURole -Name "PowerUser" -Description "User with rights to all sites and fu
         
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky.PowerUser,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
@@ -159,7 +159,7 @@ New-PSURole -Name "Franky" -Description "Gives change access to Franky Dashboard
         
     $Searcher = New-Object DirectoryServices.DirectorySearcher
     $Searcher.SearchRoot = $RoleDomain
-    $Searcher.Filter = "(&(objectCategory=person)(memberOf=))"
+    $Searcher.Filter = "(&(objectCategory=person)(memberOf=CN=Franky,OU=Groups,DC=psu,DC=keepcodeopen,DC=com))"
     $Users = $Searcher.FindAll()
     $Users | ForEach-Object {
         If ($_.Properties.samaccountname -eq $UserName) {
