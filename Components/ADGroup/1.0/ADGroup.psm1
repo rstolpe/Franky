@@ -20,10 +20,7 @@ Function New-ADGrp {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false)][string]$BoxToSync,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Create new group"
@@ -156,9 +153,6 @@ function Add-MultiGroupBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$ObjToAdd,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose
 
     )
@@ -218,10 +212,7 @@ function Edit-GroupInfoBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$GroupName,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentValue
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Change info for $($GroupName)"
@@ -278,10 +269,7 @@ function Set-GroupScopeBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$GroupName,
-        [Parameter(Mandatory = $false)][string]$CurrentGroupScope,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentGroupScope
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Change group scope for $($GroupName)"
@@ -325,10 +313,7 @@ function Set-GroupCategoryBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$GroupName,
-        [Parameter(Mandatory = $false)][string]$CurrentGroupCategory,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentGroupCategory
     )
 
     New-UDTooltip -TooltipContent {
@@ -373,10 +358,7 @@ Function Show-ADGroupMemberOf {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$ObjectName,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "See what groups $($ObjectName) are member of"
@@ -501,10 +483,7 @@ Function Show-ADGroupMemberOf {
 function Show-WhosMemberInGroup {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$GroupName,
-        [Parameter(Mandatory)][string]$User,
-        [Parameter(Mandatory)][string]$LocalIpAddress,
-        [Parameter(Mandatory)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$GroupName
     )
 
     Show-UDModal -Header { "Show members in $($GroupName)" } -Content {
@@ -592,10 +571,7 @@ function Show-WhosMemberInGroup {
 Function Add-ToGroupExcel {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     Show-UDModal -Header { "Add to group from excel file" } -Content {
         New-UDGrid -Spacing '1' -Container -Children {

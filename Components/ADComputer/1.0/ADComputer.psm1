@@ -1809,12 +1809,8 @@ Function Get-UserLoggInTime {
                     }
                 }
             } -Footer {
-                New-UDTooltip -TooltipContent {
-                    New-UDTypography -Text "Close"
-                } -content { 
-                    New-UDButton -Icon (New-UDIcon -Icon Window_Close) -Size large -OnClick {
-                        Hide-UDModal
-                    }
+                New-UDButton -Text "Close" -Size large -OnClick {
+                    Hide-UDModal
                 }
             } -FullWidth -MaxWidth 'md' -Persistent
         }

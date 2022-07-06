@@ -1,15 +1,24 @@
 {
     "cSpell.words": [
+        "abcdefghiklmnoprstuvwxyz",
+        "ABCDEFGHKLMNOPRSTUVWXYZ",
+        "accountexpired",
         "appsettings",
         "Btns",
+        "Changeinfo",
+        "chckpwchange",
         "Choosen",
         "chromebookmark",
         "chromepath",
         "COMPUTERNAME",
         "Franky",
+        "generatepassword",
+        "grpcomp",
         "Grps",
+        "grpuser",
         "Hashtable",
         "keepcodeopen",
+        "Managedby",
         "Manufacturername",
         "memberof",
         "msedgebookmark",
@@ -24,6 +33,7 @@
         "takeown",
         "tfolder",
         "TIMESPAN",
+        "txtpw",
         "UDHTML",
         "wuauserv"
     ]

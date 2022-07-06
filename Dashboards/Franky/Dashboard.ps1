@@ -42,7 +42,7 @@ $TargetDomain = $CheckHost + "." + $YourFullDomain
 $Theme = @{
     palette   = @{
         primary = @{
-            main = 'rgba(80, 184, 72, 0.3)'
+            main = 'rgba(0, 151, 207, 0.6)'
         }
         grey    = @{
             '300' = 'rgba(0, 151, 207, 0.6)'
@@ -100,18 +100,18 @@ New-UDDashboard -DisableThemeToggle -Title 'Pages' -Theme $Theme -Pages @(
     New-UDListItem -Label 'Groups' -Icon (New-UDIcon -Icon users -Size lg) -OnClick { Invoke-UDRedirect '/ADGroups' }
     New-UDListItem -Label 'Bulk changes' -Icon (New-UDIcon -Icon list_ul -Size lg) -Children {
         New-UDListItem -Label 'Add to group' -OnClick { 
-            Add-ToGroupExcel -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+            Add-ToGroupExcel
         }
     }
     New-UDListItem -Label 'Generate reports' -Icon (New-UDIcon -Icon list_ul -Size lg) -Children {
         New-UDListItem -Label 'User reports' -OnClick { 
-            Get-UserReports -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+            Get-UserReports
         }
         New-UDListItem -Label 'Computer reports' -OnClick { 
-            Get-ComputerReport -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+            Get-ComputerReport
         }
         New-UDListItem -Label 'Group reports' -OnClick { 
-            Get-ReportGroups -ActiveEventLog $ActiveEventLog -EventLogName $EventLogName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+            Get-ReportGroups
         }
     }
 }

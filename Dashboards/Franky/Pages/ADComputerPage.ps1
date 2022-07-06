@@ -92,9 +92,6 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 Remove-TempFilesClientBtn -CurrentHost $CurrentHost -RefreshOnClose "ComputerSearch" -Computer $ComputerName
                                 New-RefreshUDElementBtn -RefreshUDElement 'ComputerSearch'
                             }
-                            New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                                New-UDHTML -Markup "<br>"
-                            }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
                                 New-UDSelect -Label "User impact - $($SystInfo.Computer.UserName)" -id 'UserImpact' -FullWidth -Option {
                                     New-UDSelectOption -Name 'Select function...' -Value 1
@@ -165,7 +162,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Set-EnableDisableADAccountBtn -CurrentDescription $SearchADComputer.Description -ObjectStatus $SearchADComputer.Enabled -ObjectToChange "Computer"  -RefreshOnClose "ComputerSearch" -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Set-EnableDisableADAccountBtn -CurrentDescription $SearchADComputer.Description -ObjectStatus $SearchADComputer.Enabled -ObjectToChange "Computer"  -RefreshOnClose "ComputerSearch" -ObjectName $ComputerName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Display name"
@@ -174,7 +171,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($SearchADComputer.DisplayName)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "DisplayName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.DisplayName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "DisplayName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.DisplayName -ObjectToRename 'Computer' -ObjectName $ComputerName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "CN name"
@@ -183,7 +180,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($SearchADComputer.CN)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "CN"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.CN -ObjectToRename 'Computer' -ObjectName $SearchADComputer.samaccountname -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "CN"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.CN -ObjectToRename 'Computer' -ObjectName $SearchADComputer.samaccountname
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "SamAccountName"
@@ -192,7 +189,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($SearchADComputer.SamAccountName)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "SamAccountName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.SamAccountName -ObjectToRename 'Computer' -ObjectName $ComputerName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtComputerNameStart"  -WhatToChange "SamAccountName"  -RefreshOnClose "ComputerSearchStart" -CurrentValue $SearchADComputer.SamAccountName -ObjectToRename 'Computer' -ObjectName $ComputerName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Description"
@@ -201,7 +198,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($SearchADComputer.Description)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { 
-                                Edit-DescriptionBtn  -RefreshOnClose "ComputerSearch" -CurrentValue $SearchADComputer.Description -ChangeDescriptionObject 'Computer' -ChangeObjectName $SearchADComputer.samaccountname -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-DescriptionBtn  -RefreshOnClose "ComputerSearch" -CurrentValue $SearchADComputer.Description -ChangeDescriptionObject 'Computer' -ChangeObjectName $SearchADComputer.samaccountname
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "SID"
@@ -236,7 +233,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 $ConvertPrimaryGroup = $(try { $SearchADComputer.PrimaryGroup | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                Edit-PrimaryGroup -ObjectType "Computer" -ObjectName $SearchADComputer.samaccountname -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "ComputerSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-PrimaryGroup -ObjectType "Computer" -ObjectName $SearchADComputer.samaccountname -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "ComputerSearch"
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Managed By"
@@ -249,7 +246,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 $ComputerManagedBy = $(try { $SearchADComputer.ManagedBy | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                Edit-ManagedByBtn -CurrentValue $ComputerManagedBy -ObjectType "Computer" -ObjectName $ComputerName -RefreshOnClose "ComputerSearch"  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-ManagedByBtn -CurrentValue $ComputerManagedBy -ObjectType "Computer" -ObjectName $ComputerName -RefreshOnClose "ComputerSearch"
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Object was created"
@@ -513,8 +510,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDTooltip -TooltipContent {
                                         New-UDTypography -Text "Remove $($ComputerName) from $($EventData.Name)"
                                     } -content { 
-                                        #New-UDIconButton -Icon (New-UDIcon -Icon trash_alt -Style @{ color = 'rgba(0, 151, 207, 0.6)' }) -Size small -Onclick {
-                                        New-UDButton -Icon (New-UDIcon -Icon trash_alt) -size small -Onclick {
+                                        New-UDIconButton -Icon (New-UDIcon -Icon trash_alt -Style @{ color = 'rgba(0, 151, 207, 0.6)' }) -Size small -Onclick {
                                             try {
                                                 Remove-ADGroupMember -Identity $EventData.Name -Members "$($ComputerName)$" -Confirm:$False
                                                 if ($ActiveEventLog -eq "True") {
@@ -630,7 +626,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     }
                                 }
                                     
-                                Add-MultiGroupBtn -RefreshOnClose "ComputerSearchGroupList"  -ObjToAdd "$($ComputerName)$" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Add-MultiGroupBtn -RefreshOnClose "ComputerSearchGroupList"  -ObjToAdd "$($ComputerName)$"
                                 New-UDTooltip -TooltipContent {
                                     New-UDTypography -Text "Refresh the group member list!"
                                 } -content { 

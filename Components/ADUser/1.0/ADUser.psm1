@@ -21,10 +21,7 @@ function Unlock-ADUserAccountBtn {
     Param(
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$AccountStatus,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Unlock $($UserName)"
@@ -76,10 +73,7 @@ function New-PasswordADUserBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     New-UDTooltip -TooltipContent {
@@ -184,10 +178,7 @@ function New-ADAccountExpirationDateBtn {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Change account expiration date on $($UserName)"
@@ -235,10 +226,7 @@ Function Compare-ADUserGroupsBtn {
     Param(
         [Parameter(Mandatory)][String]$UserName,
         [Parameter(Mandatory)][String]$YourFullDomain,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Compare $($UserName) AD group memberships against an other user"
@@ -388,10 +376,7 @@ function Add-MultiUsers {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][string]$AddToGroup,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     New-UDTooltip -TooltipContent {
@@ -462,10 +447,7 @@ Function Set-UserPasswordExpiresBtn {
     Param(
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$ExpireStatus,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     If ($ExpireStatus -eq $true) {
@@ -527,10 +509,7 @@ Function Set-UserChangePasswordBtn {
     Param(
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$PWChangeStatus,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     If ($PWChangeStatus -eq $true) {
@@ -586,10 +565,7 @@ Function Set-UserChangePasswordNextLogin {
     Param(
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$PWChangeStatus,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     If ($PWChangeStatus -ne 0) {
@@ -643,10 +619,7 @@ Function Set-UserChangePasswordNextLogin {
 function Show-WhatUserManage {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)][string]$UserName,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory)][string]$UserName
     )
 
     New-UDTooltip -TooltipContent {
@@ -796,10 +769,7 @@ function Edit-ADUserInfo {
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory)][string]$ParamToChange,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     New-UDTooltip -TooltipContent {
@@ -1009,10 +979,7 @@ Function Edit-UserUPN {
     Param(
         [Parameter(Mandatory)][string]$UserName,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Change UPN for $($UserName)"
@@ -1074,10 +1041,7 @@ Function New-ADUserFranky {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $false)][string]$BoxToSync,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Create new user"

@@ -17,12 +17,6 @@
 #>
 
 function Get-UserReports {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
-    )
 
     Show-UDModal -Header { "Generate user reports" } -Content {
         New-UDGrid -Spacing '1' -Container -Children {
@@ -110,7 +104,7 @@ function Get-UserReports {
                 }
                 else {
                     New-UDGrid -Item -LargeSize 12 -ExtraSmallSize 12 -Content {
-                        New-UDAlert -Severity 'info' -Text "Could not generate a report, it's likley because you don't have anything to report"
+                        New-UDAlert -Severity 'info' -Text "Could not generate a report, it's likely because you don't have anything to report"
                     }
                 }
             } -LoadingComponent {
@@ -128,13 +122,6 @@ function Get-UserReports {
 }
 
 function Get-ComputerReport {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
-    )
-
     Show-UDModal -Header { "Generate computer reports" } -Content {
         New-UDGrid -Spacing '1' -Container -Children {
             New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {
@@ -205,13 +192,6 @@ function Get-ComputerReport {
 }
 
 function Get-ReportGroups {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
-    )
-
     Show-UDModal -Header { "Generate group reports" } -Content {
         New-UDGrid -Spacing '1' -Container -Children {
             New-UDGrid -Item -ExtraLargeSize 3 -LargeSize 3 -MediumSize 3 -SmallSize 3 -Children {

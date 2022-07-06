@@ -22,10 +22,7 @@ function Edit-DescriptionBtn {
         [Parameter(Mandatory)][string]$ChangeDescriptionObject,
         [Parameter(Mandatory)][string]$ChangeObjectName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentValue
     )
 
     New-UDTooltip -TooltipContent {
@@ -105,10 +102,7 @@ function Edit-MailBtn {
         [Parameter(Mandatory)][string]$ChangeMailObject,
         [Parameter(Mandatory)][string]$ChangeObjectName,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentValue
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Change mail for $($ChangeObjectName)"
@@ -191,10 +185,7 @@ function Move-ADObjectBtn {
         [Parameter(Mandatory = $false)][string]$CurrentValue,
         [Parameter(Mandatory = $false)][string]$UserName,
         [Parameter(Mandatory = $false)][string]$GroupName,
-        [Parameter(Mandatory = $false)][string]$ComputerName,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$ComputerName
     )
     switch ($ObjectToMove) {
         User {
@@ -234,10 +225,7 @@ function Rename-ADObjectBtn {
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory = $false)][string]$BoxToSync,
         [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$CurrentValue
     )
 
     if ($ObjectToRename -eq "Computer" -and $WhatToChange -eq "SamAccountName") {
@@ -333,10 +321,7 @@ function Set-EnableDisableADAccountBtn {
         [Parameter(Mandatory)][string]$ObjectStatus,
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory = $false)][string]$CurrentDescription,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
        
     if ($ObjectStatus -eq "true") {
@@ -434,10 +419,7 @@ function Edit-ManagedByBtn {
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     New-UDTooltip -TooltipContent {
@@ -517,10 +499,7 @@ function Remove-ADObjectBtn {
     Param(
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
     New-UDTooltip -TooltipContent {
         New-UDTypography -Text "Delete $($ObjectName)"
@@ -604,10 +583,7 @@ function Edit-PrimaryGroup {
         [Parameter(Mandatory)][string]$ObjectName,
         [Parameter(Mandatory)][string]$ObjectType,
         [Parameter(Mandatory = $false)][string]$CurrentValue,
-        [Parameter(Mandatory = $false)][string]$RefreshOnClose,
-        [Parameter(Mandatory = $false)][string]$User,
-        [Parameter(Mandatory = $false)][string]$LocalIpAddress,
-        [Parameter(Mandatory = $false)][string]$RemoteIpAddress
+        [Parameter(Mandatory = $false)][string]$RefreshOnClose
     )
 
     New-UDTooltip -TooltipContent {

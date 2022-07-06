@@ -71,10 +71,10 @@ New-UDGrid -Spacing '1' -Container -Children {
                             $ADuser = Get-ADUser -Filter "samaccountname -eq '$($SearchUserName)'" -Properties pwdLastSet, CannotChangePassword, Description, CN, DisplayName, UserPrincipalName, MobilePhone, OfficePhone, Company, Department, Title, City, Division, Office, lockedout, passwordexpired, AccountExpirationDate, UserPrincipalName, Enabled, Passwordneverexpires, whenCreated, HomeDrive, HomeDirectory, Manager, Surname, Givenname, emailaddress, HomePhone, StreetAddress, State, postalcode, pobox, fax, SID, PrimaryGroup, OfficePhone, Country, ProfilePath, ScriptPath, DistinguishedName, co
                             $CollectPwdexpdate = (Get-ADUser -Filter "samaccountname -eq '$($SearchUserName)'" -Properties msDS-UserPasswordExpiryTimeComputed).'msDS-UserPasswordExpiryTimeComputed'
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
-                                Show-WhatUserManage -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                New-PasswordADUserBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                Compare-ADUserGroupsBtn -YourFullDomain $YourFullDomain -UserName $SearchUserName -RefreshOnClose "UserSearchGroupList" -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                Remove-ADObjectBtn -RefreshOnClose "UserSearchStart"  -ObjectType "User" -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Show-WhatUserManage -UserName $SearchUserName
+                                New-PasswordADUserBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName
+                                Compare-ADUserGroupsBtn -YourFullDomain $YourFullDomain -UserName $SearchUserName -RefreshOnClose "UserSearchGroupList"
+                                Remove-ADObjectBtn -RefreshOnClose "UserSearchStart"  -ObjectType "User" -ObjectName $SearchUserName
                                 New-RefreshUDElementBtn -RefreshUDElement 'UserSearch'
                             }
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
@@ -103,7 +103,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Set-EnableDisableADAccountBtn -CurrentDescription $ADUser.Description -ObjectStatus $ADuser.Enabled -ObjectToChange "User"  -RefreshOnClose "UserSearch" -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Set-EnableDisableADAccountBtn -CurrentDescription $ADUser.Description -ObjectStatus $ADuser.Enabled -ObjectToChange "User"  -RefreshOnClose "UserSearch" -ObjectName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Display name"
@@ -112,7 +112,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($ADUser.DisplayName)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "DisplayName"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.DisplayName -ObjectToRename 'User' -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "DisplayName"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.DisplayName -ObjectToRename 'User' -ObjectName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "SamAccountName"
@@ -121,7 +121,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($ADUser.SamAccountName)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "SamAccountName"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.SamAccountName -ObjectToRename 'User' -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "SamAccountName"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.SamAccountName -ObjectToRename 'User' -ObjectName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Description"
@@ -130,7 +130,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($ADUser.Description)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-DescriptionBtn  -RefreshOnClose "UserSearch" -CurrentValue $ADUser.Description -ChangeDescriptionObject 'User' -ChangeObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-DescriptionBtn  -RefreshOnClose "UserSearch" -CurrentValue $ADUser.Description -ChangeDescriptionObject 'User' -ChangeObjectName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "CN Name"
@@ -139,7 +139,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($ADUser.CN)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "CN"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.cn -ObjectToRename 'User' -ObjectName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Rename-ADObjectBtn -BoxToSync "txtName"  -WhatToChange "CN"  -RefreshOnClose "UserSearchStart" -CurrentValue $ADUser.cn -ObjectToRename 'User' -ObjectName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "UPN"
@@ -148,7 +148,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 New-UDTypography -Text "$($ADuser.UserPrincipalName)"
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-UserUPN -UserName $SearchUserName -CurrentValue $ADuser.UserPrincipalName -RefreshOnClose "UserSearch"  -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-UserUPN -UserName $SearchUserName -CurrentValue $ADuser.UserPrincipalName -RefreshOnClose "UserSearch" 
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "SID"
@@ -177,7 +177,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 $ConvertPrimaryGroup = $(try { $ADuser.PrimaryGroup | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                Edit-PrimaryGroup -ObjectType "User" -ObjectName $SearchUserName -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-PrimaryGroup -ObjectType "User" -ObjectName $SearchUserName -CurrentValue $ConvertPrimaryGroup -RefreshOnClose "UserSearch"  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Profile path"
@@ -191,7 +191,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-ADUserInfo -ParamToChange "ProfilePath" -UserName $SearchUserName -Currentvalue $ADUser.ProfilePath -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-ADUserInfo -ParamToChange "ProfilePath" -UserName $SearchUserName -Currentvalue $ADUser.ProfilePath -RefreshOnClose "UserSearch"  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Script path"
@@ -205,7 +205,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-ADUserInfo -ParamToChange "ScriptPath" -UserName $SearchUserName -Currentvalue $ADUser.ScriptPath -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-ADUserInfo -ParamToChange "ScriptPath" -UserName $SearchUserName -Currentvalue $ADUser.ScriptPath -RefreshOnClose "UserSearch"  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Home folder"
@@ -219,7 +219,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-ADUserInfo -ParamToChange "HomeDrive" -UserName $SearchUserName -Currentvalue $ADUser.HomeDrive -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-ADUserInfo -ParamToChange "HomeDrive" -UserName $SearchUserName -Currentvalue $ADUser.HomeDrive -RefreshOnClose "UserSearch"  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Search path to home folder"
@@ -233,7 +233,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Edit-ADUserInfo -ParamToChange "HomeDirectory" -UserName $SearchUserName -Currentvalue $ADUser.HomeDirectory -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Edit-ADUserInfo -ParamToChange "HomeDirectory" -UserName $SearchUserName -Currentvalue $ADUser.HomeDirectory -RefreshOnClose "UserSearch"  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Last seen in the domain"
@@ -262,7 +262,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children { 
-                                New-ADAccountExpirationDateBtn   -RefreshOnClose "UserSearch" -UserName $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                New-ADAccountExpirationDateBtn   -RefreshOnClose "UserSearch" -UserName $SearchUserName
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Are the account locked?"
@@ -280,7 +280,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                 if ($ADuser.lockedout -eq $true) {
-                                    Unlock-ADUserAccountBtn -RefreshOnClose "UserSearch" -AccountStatus $ADuser.lockedout -UserName $SearchUserName   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                    Unlock-ADUserAccountBtn -RefreshOnClose "UserSearch" -AccountStatus $ADuser.lockedout -UserName $SearchUserName  
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
@@ -322,7 +322,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Set-UserPasswordExpiresBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -ExpireStatus $ADuser.Passwordneverexpires   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Set-UserPasswordExpiresBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -ExpireStatus $ADuser.Passwordneverexpires  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Can the user change there password?"
@@ -339,7 +339,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Set-UserChangePasswordBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -PWChangeStatus $ADuser.CannotChangePassword   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Set-UserChangePasswordBtn -RefreshOnClose "UserSearch" -UserName $SearchUserName -PWChangeStatus $ADuser.CannotChangePassword  
                             }
                             New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                 New-UDTypography -Text "Must the user change password on next login?"
@@ -353,7 +353,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 }
                             }
                             New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                Set-UserChangePasswordNextLogin -RefreshOnClose "UserSearch" -UserName $SearchUserName -PWChangeStatus $ADUser.pwdLastSet   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Set-UserChangePasswordNextLogin -RefreshOnClose "UserSearch" -UserName $SearchUserName -PWChangeStatus $ADUser.pwdLastSet  
                             }
                             New-UDGrid -Item -ExtraLargeSize 12 -LargeSize 12 -MediumSize 12 -SmallSize 12 -Children {
                                 New-UDHtml -Markup "<br>"
@@ -370,8 +370,8 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Givenname) $($ADUser.Surname)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Givenname" -Currentvalue $ADUser.Givenname -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
-                                            Edit-ADUserInfo -ParamToChange "Surname" -Currentvalue $ADUser.Surname -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Givenname" -Currentvalue $ADUser.Givenname -UserName $SearchUserName -RefreshOnClose "UserSearch"  
+                                            Edit-ADUserInfo -ParamToChange "Surname" -Currentvalue $ADUser.Surname -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Mail"
@@ -380,7 +380,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.EmailAddress)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "EmailAddress" -UserName $SearchUserName -Currentvalue $ADUser.EmailAddress -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "EmailAddress" -UserName $SearchUserName -Currentvalue $ADUser.EmailAddress -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Home Phone"
@@ -389,7 +389,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.HomePhone)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "HomePhone" -UserName $SearchUserName -Currentvalue $ADUser.homephone -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "HomePhone" -UserName $SearchUserName -Currentvalue $ADUser.homephone -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Mobile Phone"
@@ -398,7 +398,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.MobilePhone)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "MobilePhone" -UserName $SearchUserName -Currentvalue $ADUser.mobilephone -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "MobilePhone" -UserName $SearchUserName -Currentvalue $ADUser.mobilephone -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Office phone"
@@ -407,7 +407,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.OfficePhone)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "OfficePhone" -UserName $SearchUserName -Currentvalue $ADUser.officephone -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "OfficePhone" -UserName $SearchUserName -Currentvalue $ADUser.officephone -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Fax"
@@ -416,7 +416,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.FAX)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "FAX" -UserName $SearchUserName -Currentvalue $ADUser.fax -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "FAX" -UserName $SearchUserName -Currentvalue $ADUser.fax -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Street Address"
@@ -425,7 +425,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.StreetAddress)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "StreetAddress" -Currentvalue $ADUser.StreetAddress -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "StreetAddress" -Currentvalue $ADUser.StreetAddress -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "PO box"
@@ -434,7 +434,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.POBOX)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "POBOX" -Currentvalue $ADUser.POBOX -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "POBOX" -Currentvalue $ADUser.POBOX -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "State"
@@ -443,7 +443,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.State)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "State" -Currentvalue $ADUser.State -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "State" -Currentvalue $ADUser.State -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "City"
@@ -452,7 +452,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.city)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "City" -Currentvalue $ADUser.City -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "City" -Currentvalue $ADUser.City -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Postal code"
@@ -461,7 +461,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.PostalCode)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "PostalCode" -Currentvalue $ADUser.PostalCode -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "PostalCode" -Currentvalue $ADUser.PostalCode -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Country"
@@ -496,7 +496,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Company)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Company" -Currentvalue $ADUser.Company -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Company" -Currentvalue $ADUser.Company -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Title"
@@ -505,7 +505,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Title)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Title" -Currentvalue $ADUser.Title -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Title" -Currentvalue $ADUser.Title -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Division"
@@ -514,7 +514,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Division)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Division" -Currentvalue $ADUser.Division -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Division" -Currentvalue $ADUser.Division -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Department"
@@ -523,7 +523,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Department)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Department" -Currentvalue $ADUser.Department -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Department" -Currentvalue $ADUser.Department -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Office"
@@ -532,7 +532,7 @@ New-UDGrid -Spacing '1' -Container -Children {
                                             New-UDTypography -Text "$($ADUser.Office)"
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
-                                            Edit-ADUserInfo -ParamToChange "Office" -Currentvalue $ADUser.Office -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Office" -Currentvalue $ADUser.Office -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 4 -LargeSize 4 -MediumSize 4 -SmallSize 4 -Children {
                                             New-UDTypography -Text "Manager"
@@ -540,13 +540,13 @@ New-UDGrid -Spacing '1' -Container -Children {
                                         New-UDGrid -Item -ExtraLargeSize 6 -LargeSize 6 -MediumSize 6 -SmallSize 6 -Children {
                                             $ConvertManager = $(try { $ADuser.Manager | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
                                             if ($null -ne $ConvertManager) {
-                                                $ShowManager = Get-Aduser -Identity $ConvertManager -Properties Surname, GivenName
+                                                $ShowManager = Get-ADUser -Identity $ConvertManager -Properties Surname, GivenName
                                                 New-UDTypography -Text "$($ShowManager.GivenName + " " + $ShowManager.Surname + " " + "($($ConvertManager))")"
                                             }
                                         }
                                         New-UDGrid -Item -ExtraLargeSize 2 -LargeSize 2 -MediumSize 2 -SmallSize 2 -Children {
                                             $ConvertManager = $(try { $ADuser.Manager | ForEach-Object { $_.Replace("CN=", "").Split(",") | Select-Object -First 1 } } catch { $null })
-                                            Edit-ADUserInfo -ParamToChange "Manager" -Currentvalue $ConvertManager -UserName $SearchUserName -RefreshOnClose "UserSearch"   -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                            Edit-ADUserInfo -ParamToChange "Manager" -Currentvalue $ConvertManager -UserName $SearchUserName -RefreshOnClose "UserSearch"  
                                         }
                                     }
                                 } -Collapse -CollapseHeight 100 -Timeout 1000
@@ -683,7 +683,14 @@ New-UDGrid -Spacing '1' -Container -Children {
                                         }
                                     }
                                 }
-                                Add-MultiGroupBtn -RefreshOnClose "UserSearchGroupList"  -ObjToAdd $SearchUserName -User $User -LocalIpAddress $LocalIpAddress -RemoteIpAddress $RemoteIpAddress
+                                Add-MultiGroupBtn -RefreshOnClose "UserSearchGroupList" -ObjToAdd $SearchUserName
+                                New-UDTooltip -TooltipContent {
+                                    New-UDTypography -Text "Refresh the group member list!"
+                                } -content { 
+                                    New-UDButton -Icon (New-UDIcon -Icon sync_alt) -Size large -OnClick {
+                                        Sync-UDElement -Id "UserSearchGroupList"
+                                    }
+                                }
                             }
                         } -LoadingComponent {
                             New-UDProgress -Circular
