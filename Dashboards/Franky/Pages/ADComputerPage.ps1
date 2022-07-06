@@ -595,13 +595,13 @@ New-UDGrid -Spacing '1' -Container -Children {
                                     New-UDButton -Icon (New-UDIcon -Icon user_plus) -size large -Onclick { 
                                         $SearchComputerADGroup = (Get-UDElement -Id "txtSearchComputerADD").value
                                         if (-Not([string]::IsNullOrEmpty($SearchComputerADGroup))) {
-                                            $GrpCleanText = $SearchComputerADGroup.Replace("CN=", "").Split(",") | Select-Object -First 1
+                                            $SearchComputerADGroup = $SearchComputerADGroup.Replace("CN=", "").Split(",") | Select-Object -First 1
                                             $SearchComputerADGroup = $SearchComputerADGroup.trim()
                                         }
 
                                         if (-Not([string]::IsNullOrEmpty($SearchComputerADGroup))) {
-                                            if ((Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'" -SearchBase $OUComputerPath -Properties memberof).memberof -like "$($GrpCleanText)") {
-                                                Show-UDToast -Message "Användaren $($ComputerName) är redan medlem i gruppen $($GrpCleanText), ingen åtgärd har utförts!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
+                                            if ((Get-ADComputer -Filter "samaccountname -eq '$($ComputerName)$'" -SearchBase $OUComputerPath -Properties memberof).memberof -like "$($SearchComputerADGroup)") {
+                                                Show-UDToast -Message "Computer $($ComputerName) are already a member of $($SearchComputerADGroup)!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                                 Break
                                             }
                                             else {

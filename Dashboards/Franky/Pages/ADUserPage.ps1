@@ -659,26 +659,33 @@ New-UDGrid -Spacing '1' -Container -Children {
                                 } -Content { 
                                     New-UDButton -Icon (New-UDIcon -Icon user_plus) -size large -Onclick { 
                                         $SearchUserADGroup = (Get-UDElement -Id "txtSearchUserADD").value
-                                        $SearchUserADGroup = $SearchUserADGroup.trim()
+                                        if (-Not([string]::IsNullOrEmpty($SearchUserADGroup))) {
+                                            $SearchUserADGroup = $SearchUserADGroup.Replace("CN=", "").Split(",") | Select-Object -First 1
+                                            $SearchUserADGroup = $SearchUserADGroup.trim()
+                                        }
 
-                                        $SearchUserObj = $(try { Get-ADGroup -Filter "samaccountname -eq '$($SearchUserADGroup)'" } catch { $Null })
-
-                                        if ($Null -ne $SearchUserObj) { 
-                                            try {
-                                                Add-ADGroupMember -Identity $SearchUserADGroup -Members $SearchUserName
-                                                Show-UDToast -Message "$($SearchUserName) are now a member of $($SearchUserADGroup)!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
-                                                if ($ActiveEventLog -eq "True") {
-                                                    Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($SearchUserName) to $($SearchUserADGroup)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
-                                                }
-                                                Sync-UDElement -Id 'UserSearchGroupList'
-                                            }
-                                            catch {
-                                                Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                        if (-Not([string]::IsNullOrEmpty($SearchUserADGroup))) {
+                                            if ((Get-ADUser -Filter "samaccountname -eq '$($SearchUserName)'" -SearchBase $OUUsrPath -Properties memberof).memberof -like "$($SearchUserADGroup)") {
+                                                Show-UDToast -Message "User $($SearchUserName) are already a member of $($SearchUserADGroup)!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 4000
                                                 Break
+                                            }
+                                            else {
+                                                try {
+                                                    Add-ADGroupMember -Identity $SearchUserADGroup -Members $SearchUserName
+                                                    Show-UDToast -Message "$($SearchUserName) are now a member of $($SearchUserADGroup)!" -MessageColor 'green' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                    if ($ActiveEventLog -eq "True") {
+                                                        Write-EventLog -LogName $EventLogName -Source "AddToGroup" -EventID 10 -EntryType Information -Message "$($User) did add $($SearchUserName) to $($SearchUserADGroup)`nLocal IP:$($LocalIpAddress)`nExternal IP: $($RemoteIpAddress)" -Category 1 -RawData 10, 20 
+                                                    }
+                                                    Sync-UDElement -Id 'UserSearchGroupList'
+                                                }
+                                                catch {
+                                                    Show-UDToast -Message "$($PSItem.Exception)" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                                    Break
+                                                }
                                             }
                                         }
                                         else {
-                                            Show-UDToast -Message "Can't find $($SearchUserADGroup) in the AD!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
+                                            Show-UDToast -Message "You have either missed to enter a group name or the group are missing in the AD!" -MessageColor 'red' -Theme 'light' -TransitionIn 'bounceInUp' -CloseOnClick -Position center -Duration 3000
                                             Break
                                         }
                                     }
