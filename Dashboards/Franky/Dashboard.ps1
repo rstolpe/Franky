@@ -23,6 +23,10 @@ will not work.
 If you activate Load Balancing remember to fill out the hostname the AppTokens for each host in the LoadBalancing component.
 #>
 
+# SO let's see if this sync now!
+#Testing again
+
+
 if ($ActivateLoadBalancing -eq $true) {
     $GetAppToken = Get-AppToken
     $AppToken = $GetAppToken.CurrentAppToken

@@ -29,6 +29,7 @@ $DestinationFranky = "C:\Temp\Franky-$($Today.ToString("yyyy-MM-dd")).zip"
 $UnzippedFolderName = "C:\Temp\Franky-1.0-Beta2.2"
 $DownloadPSU = "https://imsreleases.blob.core.windows.net/universal/production/3.0.6/PowerShellUniversal.3.0.6.msi"
 $DestinationPSU = "C:\Temp\PowerShellUniversal.3.0.6.msi"
+$EventLogName = "Franky"
 $EventSources = @("CreatedUser", "CompareUserADGroups", "ReportAccountExpiredUsers", "ShowMemberOf", "ReportDisabledComputer", "ReportEmptyGroups", "ReportPasswordExpiredUsers", "ReportLockedUsers", "ReportDisabledUsers", "CreateUser", "ChangeComputerPrimaryGroup", "ChangeUserPrimaryGroup", "ChangeUserUPN", "CreatedComputer", "ChangeUserHomeDrive", "ChangeUserHomeDirectory", "ChangeUserScriptPath", "ChangeUserProfilePath", "DeleteChromeSettings", "DeleteEdgeSettings", "ClearGroupInfo", "ClearUserMail", "ClearGroupMail", "ClearComputerMail", "ClearComputerManagedBy", "ClearGroupManagedBy", "ClearGroupDescription", "ClearComputerDescription", "ClearUserDescription", "ClearUserManager", "ClearUserOffice", "ClearUserDepartment", "ClearUserDivision", "ClearUserTitle", "ClearUserCompany", "ClearUserGivenname", "ClearUserSurname", "ClearUserPostalCode", "ClearUserCity", "ClearUserState", "ClearUserPOBOX", "ClearUserStreetAddress", "ClearUserFAX", "ClearUserOfficePhone", "ClearUserMobilePhone", "ClearUserHomePhone", "ClearUserEmailAddress", "ChangeUserManager", "ChangeUserOffice", "ChangeUserDepartment", "ChangeUserDivision", "ChangeUserTitle", "ChangeUserCompany", "ChangeUserGivenname", "ChangeUserSurname", "ChangeUserPostalCode", "ChangeUserCity", "ChangeUserState", "ChangeUserPOBOX", "ChangeUserStreetAddress", "ChangeUserFAX", "ChangeUserOfficePhone", "ChangeUserMobilePhone", "ChangeUserHomePhone", "ChangeUserEmailAddress", "RemoveUserAsManagerFromObject", "ShowWhatUserManaging", "RemovedManageByFromGroup", "RemovedManageByFromComputer", "ChangeServiceStartUp", "EnableSchedualTask", "DisableSchedualTask", "RunSchedualTask", "CreateComputer", "SendPing", "LoginFailed", "CreateUser", "MoveUserObject", "SetUserChangePasswordNextLogin", "SetUserCannotChangePassword", "SetUserPasswordExpires", "UserSearch", "MoveComputerObject", "TempFileCleaning", "ChangeExperationDateForUser", "ChangePasswordForUser", "UnlockUserAccount", "RestartServices", "GroupSearch", "AddToGroup", "RemoveFromGroup", "DeleteGroup", "DeleteUser", "DeleteComputer", "EditGroupInfo", "ChangeGroupManagedBy", "ChangeUserDescription", "ChangeGroupDescription", "ChangeComputerDescription", "ChangeUserMail", "ChangeGroupMail", "ChangeComputerMail", "ChangeGroupSamAccountName", "ChangeGroupCN", "ChangeGroupDisplayName", "ChangeGroupScope", "ChangeGroupCategory", "CreatedGroup", "ComputerSearch", "LogOutUser", "RebootComputer", "ShowMonitorInfo", "ShowInstalledDrivers", "ShowNetworkAdapters", "ShowProcess", "ShowInstalledSoftware", "ShowAutostart", "ShowServices", "ShowSchedualTask", "DisableNetworkAdapter", "EnableNetworkAdapter", "RestartNetworkAdapter", "KillProcess", "StopServices", "StartServices", "DeletedUserProfile", "CompareComputerADGroups", "DisableComputerObject", "EnableComputerObject", "DisableUserObject", "EnableUserObject", "ChangeComputerCN", "ChangeComputerSamAccountName", "ChangeComputerDisplayName", "ChangeUserCN", "ChangeUserSamAccountName", "ChangeUserDisplayName", "ChangeComputerManagedBy", "ShowComputerUserProfiles")
 
 Function Test-NeededThings {
@@ -170,7 +171,7 @@ Function Show-FrankyInstall {
     Write-Host "`n== Adding sources to Franky in EventLog ==`n"
     Write-Host "Starting to add..."
     foreach ($source in $EventSources) {
-        New-EventLog -Source $source -LogName "Franky" -erroraction 'silentlycontinue'
+        New-EventLog -Source $source -LogName $EventLogName -erroraction 'silentlycontinue'
     }
     Write-Host "Every source is added" -ForegroundColor Green
 
@@ -182,11 +183,13 @@ Function Show-FrankyInstall {
     Expand-Archive -Path $DestinationFranky -DestinationPath "C:\Temp\"
     Write-Host "Franky is unzipped" -ForegroundColor Green
     if ($Install -eq "1") {
-        if (-Not(Test-Path -Path "C:\ProgramData\UniversalAutomation")) {
-            New-Item "C:\ProgramData\UniversalAutomation" -ItemType Directory
-        }
-        if (-Not(Test-Path -Path "C:\ProgramData\UniversalAutomation\Repository")) {
-            New-Item "C:\ProgramData\UniversalAutomation\Repository" -ItemType Directory
+        $CheckPSUFolders = @("C:\ProgramData\UniversalAutomation", "C:\ProgramData\UniversalAutomation\Repository")
+
+        foreach ($folder in $CheckPSUFolders) {
+            if (-Not(Test-Path -Path $folder)) {
+                New-Item $folder -ItemType Directory
+                Write-Host "Created $folder" -ForegroundColor Green
+            }
         }
         try {
             Write-Host "Copying Franky to C:\ProgramData\UniversalAutomation\Repository..."
@@ -195,7 +198,7 @@ Function Show-FrankyInstall {
         }
         catch {
             Write-Error "$($PSItem.Exception.Message)" -ForegroundColor Red
-            Write-Error "Could not copy Franky to C:\ProgramData\UniversalAutomation\Repository" -ForegroundColor Red
+            Write-Error "Could not copy Franky to C:\ProgramData\UniversalAutomation\Repository make sure that you do it later on!" -ForegroundColor Red
             continue
         }
     }
@@ -207,7 +210,7 @@ Function Show-FrankyInstall {
     Write-Host "`n== Downloading latest supported version of PowerShell Universal ==`n"
     Write-Host "Downloading PowerShell Universal to C:\Temp..."
     Invoke-WebRequest -Uri $DownloadPSU -OutFile $DestinationPSU
-    Write-Host "PowerShell Universal is downloaded" -ForegroundColor Green
+    Write-Host "PowerShell Universal is now downloaded to C:\Temp!" -ForegroundColor Green
 
     if ($Install -eq "1") {
         Write-Host "`n== You need to do some small changes in some files now before you install PowerShell Universal ==`n"
@@ -220,6 +223,7 @@ Function Show-FrankyInstall {
         Write-Host "In $Searcher.Filter you need to change ,OU=Groups,DC=psu,DC=keepcodeopen,DC=com to: ,$($PathDefaultGroupsOU)"
         Write-Host "(Remember not to replace the CN= as it's the name of the group for example; CN=Franky.Reader just replace everything after CN=Franky.Reader)"
         Write-Host "`n"
+        # Save this to a file in C:\Temo folder
     }
 
     Write-Host "Now you just need to install PowerShell Universal and your all set!" -ForegroundColor Green
@@ -240,7 +244,7 @@ Function Start-FrankyPrompt {
     $FQDN = Read-Host "Enter your FQDN for Franky, for example psu.stolpe.io"
 
     do {
-        $PathDefaultGroupsOU = Read-Host "Write the OU path to where your saving your groups for example OU=Groups,DC=psu,DC=keepcodeopen,DC=com"
+        $PathDefaultGroupsOU = Read-Host "Write the OU path to where your saving your groups for example OU=Groups,DC=stolpe,DC=io"
         $CheckOUPath = $(try { Get-ADOrganizationalUnit -Identity $PathDefaultGroupsOU } catch { $Null })
         if ($Null -eq $CheckOUPath) {
             Write-Host "The OU path $PathDefaultGroupsOU did not exist, please try again"

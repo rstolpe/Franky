@@ -1,13 +1,18 @@
 {
     "recommendations": [
         "ms-dotnettools.vscode-dotnet-runtime",
-        "ms-dotnettools.csharp",
         "streetsidesoftware.code-spell-checker",
         "github.vscode-pull-request-github",
         "eamodio.gitlens",
         "bierner.markdown-preview-github-styles",
-        "ms-vscode.powershell",
         "ironmansoftware.powershell-universal",
-        "naumovs.color-highlight"
+        "naumovs.color-highlight",
+        "vsls-contrib.gistfs",
+        "ms-azuretools.vscode-azurevirtualmachines",
+        "ms-azuretools.vscode-azureresourcegroups",
+        "msazurermtools.azurerm-vscode-tools",
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-vscode.azurecli",
+        "ms-vscode.azure-account"
     ]
 }
