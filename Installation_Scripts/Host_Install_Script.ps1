@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #>
 
+#Requires -RunAsAdministrator
+
 $Today = Get-Date
 $CollectPSVersion = "$($PSVersionTable.PSVersion.Major).$($PSVersionTable.PSVersion.Minor).$($PSVersionTable.PSVersion.Patch)"
 $NeededPSVersion = "7.2.5"
@@ -23,7 +25,6 @@ $DownloadPSSource = "https://github.com/PowerShell/PowerShell/releases/download/
 $DestinationPS = "C:\Temp\PowerShell-7.2.5-win-x64.msi"
 $GroupsToCreate = @("Franky.Access", "Franky", "Franky.PowerUser", "Franky.Operator", "Franky.Administrator", "Franky.Execute", "Franky.Reader")
 $NeededModules = @("ImportExcel", "Microsoft.Graph", "VMWare.PowerCLI")
-# Update NeededModules to PSCustomObject with modulename and version number
 $DownloadLatestFranky = "https://github.com/rstolpe/Franky/archive/refs/tags/v1.0-Beta2.2.zip"
 $DestinationFranky = "C:\Temp\Franky-$($Today.ToString("yyyy-MM-dd")).zip"
 $UnzippedFolderName = "C:\Temp\Franky-1.0-Beta2.2"
@@ -31,6 +32,7 @@ $DownloadPSU = "https://imsreleases.blob.core.windows.net/universal/production/3
 $DestinationPSU = "C:\Temp\PowerShellUniversal.3.0.6.msi"
 $EventLogName = "Franky"
 $EventSources = @("CreatedUser", "CompareUserADGroups", "ReportAccountExpiredUsers", "ShowMemberOf", "ReportDisabledComputer", "ReportEmptyGroups", "ReportPasswordExpiredUsers", "ReportLockedUsers", "ReportDisabledUsers", "CreateUser", "ChangeComputerPrimaryGroup", "ChangeUserPrimaryGroup", "ChangeUserUPN", "CreatedComputer", "ChangeUserHomeDrive", "ChangeUserHomeDirectory", "ChangeUserScriptPath", "ChangeUserProfilePath", "DeleteChromeSettings", "DeleteEdgeSettings", "ClearGroupInfo", "ClearUserMail", "ClearGroupMail", "ClearComputerMail", "ClearComputerManagedBy", "ClearGroupManagedBy", "ClearGroupDescription", "ClearComputerDescription", "ClearUserDescription", "ClearUserManager", "ClearUserOffice", "ClearUserDepartment", "ClearUserDivision", "ClearUserTitle", "ClearUserCompany", "ClearUserGivenname", "ClearUserSurname", "ClearUserPostalCode", "ClearUserCity", "ClearUserState", "ClearUserPOBOX", "ClearUserStreetAddress", "ClearUserFAX", "ClearUserOfficePhone", "ClearUserMobilePhone", "ClearUserHomePhone", "ClearUserEmailAddress", "ChangeUserManager", "ChangeUserOffice", "ChangeUserDepartment", "ChangeUserDivision", "ChangeUserTitle", "ChangeUserCompany", "ChangeUserGivenname", "ChangeUserSurname", "ChangeUserPostalCode", "ChangeUserCity", "ChangeUserState", "ChangeUserPOBOX", "ChangeUserStreetAddress", "ChangeUserFAX", "ChangeUserOfficePhone", "ChangeUserMobilePhone", "ChangeUserHomePhone", "ChangeUserEmailAddress", "RemoveUserAsManagerFromObject", "ShowWhatUserManaging", "RemovedManageByFromGroup", "RemovedManageByFromComputer", "ChangeServiceStartUp", "EnableSchedualTask", "DisableSchedualTask", "RunSchedualTask", "CreateComputer", "SendPing", "LoginFailed", "CreateUser", "MoveUserObject", "SetUserChangePasswordNextLogin", "SetUserCannotChangePassword", "SetUserPasswordExpires", "UserSearch", "MoveComputerObject", "TempFileCleaning", "ChangeExperationDateForUser", "ChangePasswordForUser", "UnlockUserAccount", "RestartServices", "GroupSearch", "AddToGroup", "RemoveFromGroup", "DeleteGroup", "DeleteUser", "DeleteComputer", "EditGroupInfo", "ChangeGroupManagedBy", "ChangeUserDescription", "ChangeGroupDescription", "ChangeComputerDescription", "ChangeUserMail", "ChangeGroupMail", "ChangeComputerMail", "ChangeGroupSamAccountName", "ChangeGroupCN", "ChangeGroupDisplayName", "ChangeGroupScope", "ChangeGroupCategory", "CreatedGroup", "ComputerSearch", "LogOutUser", "RebootComputer", "ShowMonitorInfo", "ShowInstalledDrivers", "ShowNetworkAdapters", "ShowProcess", "ShowInstalledSoftware", "ShowAutostart", "ShowServices", "ShowSchedualTask", "DisableNetworkAdapter", "EnableNetworkAdapter", "RestartNetworkAdapter", "KillProcess", "StopServices", "StartServices", "DeletedUserProfile", "CompareComputerADGroups", "DisableComputerObject", "EnableComputerObject", "DisableUserObject", "EnableUserObject", "ChangeComputerCN", "ChangeComputerSamAccountName", "ChangeComputerDisplayName", "ChangeUserCN", "ChangeUserSamAccountName", "ChangeUserDisplayName", "ChangeComputerManagedBy", "ShowComputerUserProfiles")
+$CurrentModules = Get-InstalledModule | Select-Object Name, Version | Sort-Object Name
 
 Function Test-NeededThings {
     Write-Host "`n=== Checking if Active Directory module are installed ===`n"
@@ -66,19 +68,45 @@ Function Show-FrankyInstall {
 
     Write-Host "=== Installing/updating modules that are needed ===`n"
     foreach ($m in $NeededModules) {
-        if (Get-Module -ListAvailable -Name $m) {
-            # Check so the version number is the accepted one, if not update the module
+        if ($m -in $CurrentModules) {
+            try {
+                Write-Host "Checking if $($m) needs to be updated..."
+                Update-Module -Name $($m) -AcceptLicense -Scope:AllUsers
+
+                $AllVersions = Get-InstalledModule -Name $m -AllVersions | Sort-Object PublishedDate -Descending
+                $MostRecentVersion = $AllVersions[0].Version
+                if ($AllVersions.Count -gt 1 ) {
+                    Foreach ($Version in $AllVersions) {
+                        if ($Version.Version -ne $MostRecentVersion) {
+                            try {
+                                Write-Host "Uninstalling previous version $($Version.Version) of module $($m)..."
+                                Uninstall-Module -Name $m -RequiredVersion $Version.Version -Force:$True -ErrorAction SilentlyContinue
+                            }
+                            catch {
+                                Write-Host "Error uninstalling previous version $($Version.Version) of module $($m)" -ForegroundColor Red
+                                Write-Host "$($PSItem.Exception.Message)" -ForegroundColor Red
+                                continue
+                            }
+                        }
+                    }
+                }
+            }
+            catch {
+                write-Host "Could not update $($m)" -ForegroundColor Red
+                Write-Host "$($PSItem.Exception.Message)" -ForegroundColor Red
+                continue
+            }
         }
         else {
-            Write-Host "Installing module $m as it's missing..."
+            Write-Host "Installing module $($m) as it's missing..."
             try {
-                Install-Module -Name $m -Force
+                Install-Module -Name $($m) -AcceptLicense -Scope:AllUsers -Force
                 Write-Host "$m is now installed!" -ForegroundColor Green
             }
             catch {
                 write-Host "Could not install $($m)" -ForegroundColor Red
                 Write-Host "$($PSItem.Exception.Message)" -ForegroundColor Red
-                Break
+                break
             }
         }
     }
@@ -236,6 +264,9 @@ Function Start-FrankyPrompt {
     Write-Host "Press 'Q' to quit"
     do {
         $WhatToDo = Read-Host "What do you want to do?"
+        if ($WhatToDo -ne "Q" -or $WhatToDo -ne 1 -or $WhatToDo -ne 2 -or $Null -eq $WhatToDo) {
+            Write-Host "You did not enter a valide option, please enter 1, 2 or Q"
+        }
         if ($WhatToDo -eq "Q") {
             exit
         }
@@ -258,6 +289,7 @@ Function Start-FrankyPrompt {
             Write-Host "User $UserToAddAsAdmin did not exist in the AD, please try an other username"
         }
     } until ($Null -ne $CheckAdminUser)
+
     Write-Host "`n"
     Show-FrankyInstall -Install $WhatToDo -FQDN $FQDN -PathDefaultGroupsOU $PathDefaultGroupsOU -UserToAddAsAdmin $UserToAddAsAdmin
 }

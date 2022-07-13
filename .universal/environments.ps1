@@ -18,4 +18,4 @@
 
 #If you want to run PS5.1 just remove the # at the line below and put # in front of the second line.
 # New-PSUEnvironment -Name "Franky" -Version "5.1" -Path "C:\windows\System32\WindowsPowerShell\v1.0\powershell.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
-New-PSUEnvironment -Name "Franky" -Version "7.2.5" -Path "C:\Program Files\PowerShell\7\pwsh.exe" -Modules @('ActiveDirectory', 'ImportExcel') -Variables @('ActivateLoadBalancing', 'EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
+New-PSUEnvironment -Name "Franky" -Version "7.2.5" -Path "C:\Program Files\PowerShell\7\pwsh.exe" -Modules @('ImportExcel') -Variables @('ActivateLoadBalancing', 'EventLogName', 'DashboardName', 'YourDomain', 'YourFullDomain', 'AccessPort', 'OUComputerPath', 'OUGrpPath', 'OUUsrPath', 'UDScriptRoot', 'NavBarLogo', 'UploadTemp')
